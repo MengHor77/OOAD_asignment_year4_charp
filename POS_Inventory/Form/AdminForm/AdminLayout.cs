@@ -12,7 +12,10 @@ namespace POS_Inventory.Form.AdminForm
         private Panel sidePanel;
         private Panel headerPanel;
         private Panel mainContentPanel;
-        private System.Windows.Forms.Form activeForm = null;
+
+        // References for the Branding Area at the Top
+        private Panel pnlSidebarBranding;
+        private Label lblAdminTitle;
 
         // Collapse variables
         private Timer sidebarTimer;
@@ -44,43 +47,134 @@ namespace POS_Inventory.Form.AdminForm
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.BackColor = AppColorConfix.ContentBackground;
 
+            // 1. Initialize Side Panel
             sidePanel = new Panel();
             sidePanel.Dock = DockStyle.Left;
             sidePanel.Width = ExpandedWidth;
             sidePanel.BackColor = AppColorConfix.SidebarRed;
             this.Controls.Add(sidePanel);
 
+            // 2. Initialize Header Panel
             headerPanel = new Panel();
             headerPanel.Dock = DockStyle.Top;
             headerPanel.Height = 50;
             headerPanel.BackColor = AppColorConfix.HeaderPink;
             this.Controls.Add(headerPanel);
 
+            // 3. Initialize Main Content Panel
+            mainContentPanel = new Panel();
+            mainContentPanel.Dock = DockStyle.Fill;
+            mainContentPanel.BackColor = AppColorConfix.ContentBackground;
+            this.Controls.Add(mainContentPanel);
+
+            // Z-ORDER: Sidebar and Header must be on top
+            mainContentPanel.SendToBack();
+            sidePanel.BringToFront();
+            headerPanel.BringToFront();
+
+            // 4. Header UI Elements (Hamburger Button)
             Label btnMenu = new Label();
             btnMenu.Text = "≡";
             btnMenu.Font = new Font("Segoe UI", 18, FontStyle.Bold);
             btnMenu.ForeColor = AppColorConfix.TextDark;
             btnMenu.Cursor = Cursors.Hand;
-            btnMenu.Size = new Size(30, 30);
-            btnMenu.Location = new Point(10, 10);
+            btnMenu.AutoSize = false;
+            btnMenu.Size = new Size(45, 45);
+            btnMenu.TextAlign = ContentAlignment.MiddleCenter;
+            btnMenu.Location = new Point(2, 2);
             btnMenu.Click += (s, e) => sidebarTimer.Start();
+
+            btnMenu.MouseEnter += (s, e) => btnMenu.BackColor = AppColorConfix.SidebarHover;
+            btnMenu.MouseLeave += (s, e) => btnMenu.BackColor = Color.Transparent;
             headerPanel.Controls.Add(btnMenu);
 
             Label lblWelcome = new Label();
             lblWelcome.Text = "Welcome Admin!";
             lblWelcome.ForeColor = AppColorConfix.TextDark;
             lblWelcome.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            lblWelcome.Location = new Point(50, 15);
+            lblWelcome.Location = new Point(60, 15);
             lblWelcome.AutoSize = true;
             headerPanel.Controls.Add(lblWelcome);
 
             AddHeaderLink("Logout", 60);
             AddHeaderLink("profile", 130);
+        }
 
-            mainContentPanel = new Panel();
-            mainContentPanel.Dock = DockStyle.Fill;
-            mainContentPanel.BackColor = AppColorConfix.ContentBackground;
-            this.Controls.Add(mainContentPanel);
+        public void InitializeSidebar()
+        {
+            sidePanel.Controls.Clear();
+
+            // 1. Create the Top Branding Panel first
+            pnlSidebarBranding = new Panel();
+            pnlSidebarBranding.Dock = DockStyle.Top;
+            pnlSidebarBranding.Height = 50; // Aligns with header
+            pnlSidebarBranding.BackColor = AppColorConfix.SidebarHover;
+
+            lblAdminTitle = new Label();
+            lblAdminTitle.Text = isCollapsed ? "AP" : "Admin POS";
+            lblAdminTitle.ForeColor = AppColorConfix.TextDark;
+            lblAdminTitle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+            lblAdminTitle.Dock = DockStyle.Fill;
+            lblAdminTitle.TextAlign = ContentAlignment.MiddleCenter;
+
+            pnlSidebarBranding.Controls.Add(lblAdminTitle);
+            sidePanel.Controls.Add(pnlSidebarBranding);
+
+            // 2. Define Menu Items in order
+            List<SidebarItem> menuItems = new List<SidebarItem>()
+    {
+        new SidebarItem { Title = "Dasboard", IconText = "📊" },
+        new SidebarItem { Title = "Category", IconText = "📦" },
+        new SidebarItem { Title = "Product", IconText = "🛍️" },
+        new SidebarItem { Title = "Staff", IconText = "👥" },
+        new SidebarItem { Title = "Report", IconText = "📈" },
+        new SidebarItem { Title = "Logout", IconText = "🚪" }
+    };
+
+            // 3. Add buttons in reverse order for correct Docking stack
+            for (int i = menuItems.Count - 1; i >= 0; i--)
+            {
+                sidePanel.Controls.Add(CreateMenuButton(menuItems[i]));
+            }
+
+            // 4. Force Branding to stay at the absolute top
+            pnlSidebarBranding.SendToBack();
+        }
+        private Button CreateMenuButton(SidebarItem item)
+        {
+            Button btn = new Button();
+            btn.Tag = item;
+            btn.Text = "    " + item.IconText + "    " + item.Title;
+            btn.Dock = DockStyle.Top;
+            btn.Height = 50;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.ForeColor = AppColorConfix.TextDark;
+            btn.Font = new Font("Segoe UI", 10);
+            btn.TextAlign = ContentAlignment.MiddleLeft;
+            btn.Padding = new Padding(10, 0, 0, 0);
+            btn.Cursor = Cursors.Hand;
+
+            btn.MouseEnter += (s, e) => btn.BackColor = AppColorConfix.SidebarHover;
+            btn.MouseLeave += (s, e) => btn.BackColor = AppColorConfix.SidebarRed;
+
+            btn.Click += (s, e) => {
+                if (item.Title == "Logout") PerformLogout();
+                else NavigateToPage(item.Title);
+            };
+
+            return btn;
+        }
+
+        private void NavigateToPage(string title)
+        {
+            mainContentPanel.Controls.Clear();
+            if (title == "Dasboard") LoadDashboardPage();
+            else
+            {
+                Label lbl = new Label { Text = title + " Page coming soon...", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 12) };
+                mainContentPanel.Controls.Add(lbl);
+            }
         }
 
         private void SidebarTimer_Tick(object sender, EventArgs e)
@@ -90,9 +184,10 @@ namespace POS_Inventory.Form.AdminForm
                 sidePanel.Width += 10;
                 if (sidePanel.Width >= ExpandedWidth)
                 {
+                    sidePanel.Width = ExpandedWidth;
                     isCollapsed = false;
                     sidebarTimer.Stop();
-                    RefreshButtonAppearance(); // Fix alignment after expand
+                    RefreshButtonAppearance();
                 }
             }
             else
@@ -100,38 +195,55 @@ namespace POS_Inventory.Form.AdminForm
                 sidePanel.Width -= 10;
                 if (sidePanel.Width <= CollapsedWidth)
                 {
+                    sidePanel.Width = CollapsedWidth;
                     isCollapsed = true;
                     sidebarTimer.Stop();
-                    RefreshButtonAppearance(); // Fix alignment after collapse
+                    RefreshButtonAppearance();
                 }
             }
         }
 
-        // --- NEW METHOD TO CENTER ICONS ---
         private void RefreshButtonAppearance()
         {
+            // 1. Update Top Branding Text (Admin POS)
+            if (lblAdminTitle != null)
+            {
+                if (isCollapsed)
+                {
+                    // Show short version when sidebar is 50px
+                    lblAdminTitle.Text = "AP";
+                    lblAdminTitle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+                }
+                else
+                {
+                    // Show full title when sidebar is 140px
+                    lblAdminTitle.Text = "Admin POS";
+                    lblAdminTitle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+                }
+            }
+
+            // 2. Update Sidebar Buttons (Dashboard, Category, etc.)
             foreach (Control ctrl in sidePanel.Controls)
             {
-                if (ctrl is Button btn)
+                if (ctrl is Button btn && btn.Tag is SidebarItem item)
                 {
                     if (isCollapsed)
                     {
+                        // Minimized: Show only Icon
                         btn.TextAlign = ContentAlignment.MiddleCenter;
                         btn.Padding = new Padding(0);
-                        // Only show the emoji
-                        if (btn.Tag is SidebarItem item) btn.Text = item.IconText;
+                        btn.Text = item.IconText;
                     }
                     else
                     {
+                        // Expanded: Show Icon + Text
                         btn.TextAlign = ContentAlignment.MiddleLeft;
                         btn.Padding = new Padding(10, 0, 0, 0);
-                        // Show Emoji + Text
-                        if (btn.Tag is SidebarItem item) btn.Text = "    " + item.IconText + "    " + item.Title;
+                        btn.Text = "    " + item.IconText + "    " + item.Title;
                     }
                 }
             }
         }
-
         private void AddHeaderLink(string text, int rightOffset)
         {
             Label lbl = new Label();
@@ -146,127 +258,11 @@ namespace POS_Inventory.Form.AdminForm
             if (text == "Logout") lbl.Click += (s, e) => PerformLogout();
         }
 
-        public void InitializeSidebar()
-        {
-            sidePanel.Controls.Clear();
-
-            List<SidebarItem> menuItems = new List<SidebarItem>()
-            {
-                new SidebarItem { Title = "Dasboard", IconText = "📊" },
-                new SidebarItem { Title = "Category", IconText = "📦" },
-                new SidebarItem { Title = "Product", IconText = "🛍️" },
-                new SidebarItem { Title = "Staff", IconText = "👥" },
-                new SidebarItem { Title = "Report", IconText = "📈" },
-                new SidebarItem { Title = "Logout", IconText = "🚪" }
-            };
-
-            for (int i = menuItems.Count - 1; i >= 0; i--)
-            {
-                sidePanel.Controls.Add(CreateMenuButton(menuItems[i]));
-            }
-
-            Label lblGeneral = new Label();
-            lblGeneral.ForeColor = AppColorConfix.TextLight;
-            lblGeneral.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-            lblGeneral.Dock = DockStyle.Top;
-            lblGeneral.Height = 30;
-            lblGeneral.TextAlign = ContentAlignment.MiddleLeft;
-            lblGeneral.Padding = new Padding(10, 0, 0, 0);
-            sidePanel.Controls.Add(lblGeneral);
-
-           
-        }
-
-        private Button CreateMenuButton(SidebarItem item)
-        {
-            Button btn = new Button();
-            btn.Tag = item; // Save the item data here so we can access it during collapse
-
-            // Set initial text appearance
-            btn.Text = "    " + item.IconText + "    " + item.Title;
-
-            // Style settings
-            btn.Dock = DockStyle.Top;
-            btn.Height = 50;
-            btn.FlatStyle = FlatStyle.Flat;
-            btn.FlatAppearance.BorderSize = 0;
-            btn.ForeColor = AppColorConfix.TextDark;
-            btn.Font = new Font("Segoe UI", 10);
-            btn.TextAlign = ContentAlignment.MiddleLeft;
-            btn.Padding = new Padding(10, 0, 0, 0);
-            btn.Cursor = Cursors.Hand;
-
-            // Hover effects using your config colors
-            btn.MouseEnter += (s, e) => btn.BackColor = AppColorConfix.SidebarHover;
-            btn.MouseLeave += (s, e) => btn.BackColor = AppColorConfix.SidebarRed;
-
-            // Navigation Logic (Routing)
-            btn.Click += (s, e) => {
-                if (item.Title == "Logout")
-                {
-                    PerformLogout();
-                }
-                else
-                {
-                    // Clear current content before loading new "route"
-                    mainContentPanel.Controls.Clear();
-
-                    switch (item.Title)
-                    {
-                        case "Dasboard":
-                            LoadDashboardPage();
-                            break;
-                        case "Category":
-                            // Place your LoadCategory method here
-                            break;
-                        case "Product":
-                            // Place your LoadProduct method here
-                            break;
-                        case "Staff":
-                            // Place your LoadStaff method here
-                            break;
-                        case "Report":
-                            // Place your LoadReport method here
-                            break;
-                        default:
-                            // Fallback for pages not yet implemented
-                            Label lbl = new Label();
-                            lbl.Text = item.Title + " Page coming soon...";
-                            lbl.Dock = DockStyle.Fill;
-                            lbl.TextAlign = ContentAlignment.MiddleCenter;
-                            lbl.Font = new Font("Segoe UI", 12);
-                            mainContentPanel.Controls.Add(lbl);
-                            break;
-                    }
-                }
-            };
-
-            return btn;
-        }
-
         private void LoadDashboardPage()
         {
             mainContentPanel.Controls.Clear();
-
-             DashboardPage dashboard = new DashboardPage();
-
-             mainContentPanel.Controls.Add(dashboard);
-        }
-
-        private Panel CreateDashboardCard(string text, Point location, Color bgColor)
-        {
-            Panel pnl = new Panel();
-            pnl.Size = new Size(250, 160);
-            pnl.Location = location;
-            pnl.BackColor = bgColor;
-            Label lbl = new Label();
-            lbl.Text = text;
-            lbl.ForeColor = AppColorConfix.TextDark;
-            lbl.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-            lbl.Dock = DockStyle.Fill;
-            lbl.TextAlign = ContentAlignment.MiddleCenter;
-            pnl.Controls.Add(lbl);
-            return pnl;
+            DashboardPage dashboard = new DashboardPage();
+            mainContentPanel.Controls.Add(dashboard);
         }
 
         private void PerformLogout()

@@ -18,6 +18,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Dashboard
         {
             this.Dock = DockStyle.Fill;
             this.BackColor = AppColorConfix.ContentBackground;
+            this.Padding = new Padding(20);
         }
 
         private void LoadDashboardCards()
