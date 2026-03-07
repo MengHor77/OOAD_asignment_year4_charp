@@ -1,0 +1,140 @@
+﻿using System;
+using System.Data;
+using MySql.Data.MySqlClient;
+using BCrypt.Net;
+
+namespace POS_Inventory.Config
+{
+    internal class UserConfig
+    {
+        private readonly string connectionString = "datasource=127.0.0.1;port=3306;username=root;password=;database=pos_db;";
+
+        public UserConfig()
+        {
+            CreateUserTableIfNotExists();
+        }
+
+        private void CreateUserTableIfNotExists()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = @"CREATE TABLE IF NOT EXISTS users (
+                                    id INT AUTO_INCREMENT PRIMARY KEY,
+                                    username VARCHAR(50) NOT NULL UNIQUE,
+                                    email VARCHAR(100),
+                                    password VARCHAR(255) NOT NULL, 
+                                    role VARCHAR(20) NOT NULL
+                                  );";
+
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    cmd.ExecuteNonQuery();
+
+                    // Seed Admin - Added admin@gmail.com here
+                    string checkAdmin = "SELECT COUNT(*) FROM users WHERE username='admin'";
+                    MySqlCommand checkCmd = new MySqlCommand(checkAdmin, conn);
+                    if (Convert.ToInt32(checkCmd.ExecuteScalar()) == 0)
+                    {
+                        string hashedPass = BCrypt.Net.BCrypt.HashPassword("admin123");
+                        // Updated INSERT to include email
+                        string seedSql = "INSERT INTO users (username, email, password, role) VALUES ('admin', 'admin@gmail.com', @pass, 'Admin');";
+                        MySqlCommand seedCmd = new MySqlCommand(seedSql, conn);
+                        seedCmd.Parameters.AddWithValue("@pass", hashedPass);
+                        seedCmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex) { Console.WriteLine("Setup Error: " + ex.Message); }
+            }
+        }
+
+        public DataTable ValidateLogin(string identifier, string password)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    // This query allows login via username OR email
+                    string query = "SELECT password, role FROM users WHERE username=@id OR email=@id";
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@id", identifier);
+
+                    MySqlDataAdapter sda = new MySqlDataAdapter(cmd);
+                    DataTable tempDt = new DataTable();
+                    sda.Fill(tempDt);
+
+                    if (tempDt.Rows.Count > 0)
+                    {
+                        string dbHashedPassword = tempDt.Rows[0]["password"].ToString();
+                        // BCrypt verification
+                        if (BCrypt.Net.BCrypt.Verify(password, dbHashedPassword))
+                        {
+                            return tempDt;
+                        }
+                    }
+                }
+                catch (Exception ex) { throw new Exception("Database Error: " + ex.Message); }
+                return new DataTable();
+            }
+        }
+
+        // Cashier CRUD methods kept as requested
+        public bool CreateCashier(string username, string email, string password)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                string hashedPass = BCrypt.Net.BCrypt.HashPassword(password);
+                string query = "INSERT INTO users (username, email, password, role) VALUES (@user, @email, @pass, 'Cashier')";
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@user", username);
+                cmd.Parameters.AddWithValue("@email", email);
+                cmd.Parameters.AddWithValue("@pass", hashedPass);
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
+        public DataTable GetAllCashiers()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                DataTable dt = new DataTable();
+                conn.Open();
+                string query = "SELECT id, username, email, role FROM users WHERE role = 'Cashier'";
+                MySqlDataAdapter sda = new MySqlDataAdapter(query, conn);
+                sda.Fill(dt);
+                return dt;
+            }
+        }
+
+        public bool UpdateCashier(int id, string username, string email, string password)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                string hashedPass = BCrypt.Net.BCrypt.HashPassword(password);
+                string query = "UPDATE users SET username=@user, email=@email, password=@pass WHERE id=@id AND role='Cashier'";
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@user", username);
+                cmd.Parameters.AddWithValue("@email", email);
+                cmd.Parameters.AddWithValue("@pass", hashedPass);
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
+        public bool DeleteCashier(int id)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "DELETE FROM users WHERE id=@id AND role='Cashier'";
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+    }
+}
