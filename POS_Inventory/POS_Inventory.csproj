@@ -112,6 +112,12 @@
     <Compile Include="Form\AdminForm\AdminLayout.Designer.cs">
       <DependentUpon>AdminLayout.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\AdminForm\Page\Dashboard\DashboardPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Dashboard\DashboardPage.Designer.cs">
+      <DependentUpon>DashboardPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form\AdminForm\SidebarItem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -140,7 +146,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Form\AdminForm\Page\Category\" />
-    <Folder Include="Form\AdminForm\Page\Dashboard\" />
     <Folder Include="Form\AdminForm\Page\Inventory\" />
     <Folder Include="Form\AdminForm\Page\Product\" />
     <Folder Include="Form\AdminForm\Page\Report\" />

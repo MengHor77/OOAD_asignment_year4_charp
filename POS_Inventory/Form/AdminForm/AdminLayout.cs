@@ -1,8 +1,9 @@
-﻿using System;
+﻿using POS_Inventory.Config;
+using POS_Inventory.Form.AdminForm.Page.Dashboard;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using POS_Inventory.Config;
 
 namespace POS_Inventory.Form.AdminForm
 {
@@ -25,7 +26,7 @@ namespace POS_Inventory.Form.AdminForm
             SetupCollapseTimer();
             SetupLayoutDesign();
             InitializeSidebar();
-            LoadDashboardOverview();
+            LoadDashboardPage();
         }
 
         private void SetupCollapseTimer()
@@ -173,22 +174,18 @@ namespace POS_Inventory.Form.AdminForm
             lblGeneral.Padding = new Padding(10, 0, 0, 0);
             sidePanel.Controls.Add(lblGeneral);
 
-            Label lblBrand = new Label();
-            lblBrand.Text = "Admin POS";
-            lblBrand.ForeColor = AppColorConfix.TextDark;
-            lblBrand.BackColor = AppColorConfix.BrandBlue;
-            lblBrand.TextAlign = ContentAlignment.MiddleCenter;
-            lblBrand.Dock = DockStyle.Top;
-            lblBrand.Height = 50;
-            lblBrand.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-            sidePanel.Controls.Add(lblBrand);
+           
         }
 
         private Button CreateMenuButton(SidebarItem item)
         {
             Button btn = new Button();
             btn.Tag = item; // Save the item data here so we can access it during collapse
+
+            // Set initial text appearance
             btn.Text = "    " + item.IconText + "    " + item.Title;
+
+            // Style settings
             btn.Dock = DockStyle.Top;
             btn.Height = 50;
             btn.FlatStyle = FlatStyle.Flat;
@@ -199,24 +196,61 @@ namespace POS_Inventory.Form.AdminForm
             btn.Padding = new Padding(10, 0, 0, 0);
             btn.Cursor = Cursors.Hand;
 
+            // Hover effects using your config colors
             btn.MouseEnter += (s, e) => btn.BackColor = AppColorConfix.SidebarHover;
             btn.MouseLeave += (s, e) => btn.BackColor = AppColorConfix.SidebarRed;
 
+            // Navigation Logic (Routing)
             btn.Click += (s, e) => {
-                if (item.Title == "Logout") PerformLogout();
-                else if (item.Title == "Dasboard") LoadDashboardOverview();
+                if (item.Title == "Logout")
+                {
+                    PerformLogout();
+                }
+                else
+                {
+                    // Clear current content before loading new "route"
+                    mainContentPanel.Controls.Clear();
+
+                    switch (item.Title)
+                    {
+                        case "Dasboard":
+                            LoadDashboardPage();
+                            break;
+                        case "Category":
+                            // Place your LoadCategory method here
+                            break;
+                        case "Product":
+                            // Place your LoadProduct method here
+                            break;
+                        case "Staff":
+                            // Place your LoadStaff method here
+                            break;
+                        case "Report":
+                            // Place your LoadReport method here
+                            break;
+                        default:
+                            // Fallback for pages not yet implemented
+                            Label lbl = new Label();
+                            lbl.Text = item.Title + " Page coming soon...";
+                            lbl.Dock = DockStyle.Fill;
+                            lbl.TextAlign = ContentAlignment.MiddleCenter;
+                            lbl.Font = new Font("Segoe UI", 12);
+                            mainContentPanel.Controls.Add(lbl);
+                            break;
+                    }
+                }
             };
 
             return btn;
         }
 
-        private void LoadDashboardOverview()
+        private void LoadDashboardPage()
         {
             mainContentPanel.Controls.Clear();
-            Panel cardStaff = CreateDashboardCard("Total Staff", new Point(50, 50), AppColorConfix.CardStaff);
-            Panel cardProduct = CreateDashboardCard("Quick Products", new Point(330, 50), AppColorConfix.CardProduct);
-            mainContentPanel.Controls.Add(cardStaff);
-            mainContentPanel.Controls.Add(cardProduct);
+
+             DashboardPage dashboard = new DashboardPage();
+
+             mainContentPanel.Controls.Add(dashboard);
         }
 
         private Panel CreateDashboardCard(string text, Point location, Color bgColor)
