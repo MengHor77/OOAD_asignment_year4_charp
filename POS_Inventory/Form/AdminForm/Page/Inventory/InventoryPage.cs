@@ -25,7 +25,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
         private void SetupLayout()
         {
             this.Dock = DockStyle.Fill;
-            this.BackColor = Color.White;
+            this.BackColor = AppColorConfig.ContentBackground;
 
             // --- 1. TOP CONTROL PANEL ---
             Panel pnlTop = new Panel { Dock = DockStyle.Top, Height = 100, BackColor = Color.FromArgb(240, 240, 240) };

@@ -24,8 +24,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Staff
         private void SetupLayout()
         {
             this.Dock = DockStyle.Fill;
-            this.BackColor = Color.White;
-
+            this.BackColor = AppColorConfig.ContentBackground;
             // --- 1. INPUT PANEL (TOP) ---
             Panel pnlInputs = new Panel { Dock = DockStyle.Top, Height = 180, BackColor = Color.FromArgb(242, 242, 242), Padding = new Padding(15) };
 

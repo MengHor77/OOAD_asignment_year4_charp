@@ -45,7 +45,7 @@ namespace POS_Inventory.Config
                         seedCmd.ExecuteNonQuery();
                     }
 
-                    MessageBox.Show("Categories table created or already exists.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                  //  MessageBox.Show("Categories table created or already exists.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {

@@ -23,8 +23,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
         private void SetupLayout()
         {
             this.Dock = DockStyle.Fill;
-            this.BackColor = Color.White;
-
+            this.BackColor = AppColorConfig.ContentBackground;
             // --- 1. FILTER PANEL (TOP) ---
             Panel pnlFilter = new Panel { Dock = DockStyle.Top, Height = 80, BackColor = Color.FromArgb(245, 245, 245) };
 

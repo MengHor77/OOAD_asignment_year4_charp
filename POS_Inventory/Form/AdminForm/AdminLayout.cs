@@ -1,15 +1,16 @@
-﻿using POS_Inventory.Config;
+﻿using POS_Inventory;
+using POS_Inventory.Config;
+using POS_Inventory.Form.AdminForm.Page.Category;
 using POS_Inventory.Form.AdminForm.Page.Dashboard;
+using POS_Inventory.Form.AdminForm.Page.Inventory;
+using POS_Inventory.Form.AdminForm.Page.Product;
+using POS_Inventory.Form.AdminForm.Page.Report;
+using POS_Inventory.Form.AdminForm.Page.Staff;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using POS_Inventory;
-using POS_Inventory.Form.AdminForm.Page.Category;
-using POS_Inventory.Form.AdminForm.Page.Inventory;
-using POS_Inventory.Form.AdminForm.Page.Product;
-using POS_Inventory.Form.AdminForm.Page.Staff;
-using POS_Inventory.Form.AdminForm.Page.Report;
 
 namespace POS_Inventory.Form.AdminForm
 {
@@ -41,7 +42,7 @@ namespace POS_Inventory.Form.AdminForm
         private void SetupCollapseTimer()
         {
             sidebarTimer = new Timer();
-            sidebarTimer.Interval = 10;
+            sidebarTimer.Interval = 20;
             sidebarTimer.Tick += SidebarTimer_Tick;
         }
 
@@ -97,7 +98,7 @@ namespace POS_Inventory.Form.AdminForm
                 TextAlign = ContentAlignment.MiddleCenter,
                 Location = new Point(2, 2)
             };
-            btnMenu.Click += (s, e) => ToggleSidebarInstant();
+            btnMenu.Click += (s, e) => sidebarTimer.Start();
             btnMenu.MouseEnter += (s, e) => btnMenu.BackColor = AppColorConfig.SidebarHover;
             btnMenu.MouseLeave += (s, e) => btnMenu.BackColor = Color.Transparent;
             headerPanel.Controls.Add(btnMenu);
@@ -240,23 +241,47 @@ namespace POS_Inventory.Form.AdminForm
                 mainContentPanel.Controls.Add(pageToLoad);
             }
         }
-        private void ToggleSidebarInstant()
+        // Smooth sidebar animation replacing ToggleSidebarInstant
+        private void SidebarTimer_Tick(object sender, EventArgs e)
         {
+            this.SuspendLayout();
+
+            int step = 20; // smaller step for smoother animation
+
             if (isCollapsed)
             {
-                sidePanel.Width = ExpandedWidth;
-                isCollapsed = false;
+                // Expand sidebar
+                sidePanel.Width += step;
+
+                if (sidePanel.Width >= ExpandedWidth)
+                {
+                    sidePanel.Width = ExpandedWidth; // ensure exact width
+                    sidebarTimer.Stop();
+                    isCollapsed = false;
+                    RefreshButtonAppearance();
+                }
             }
             else
             {
-                sidePanel.Width = CollapsedWidth;
-                isCollapsed = true;
-            }
-            RefreshButtonAppearance();
-            mainContentPanel.Location = new Point(sidePanel.Width, headerPanel.Height);
-            mainContentPanel.Width = this.ClientSize.Width - sidePanel.Width;
-        }
+                // Collapse sidebar
+                sidePanel.Width -= step;
 
+                if (sidePanel.Width <= CollapsedWidth)
+                {
+                    sidePanel.Width = CollapsedWidth; // ensure exact width
+                    sidebarTimer.Stop();
+                    isCollapsed = true;
+                    RefreshButtonAppearance();
+                }
+            }
+
+            // Update main content position and size (keep your old logic)
+            mainContentPanel.Location = new Point(sidePanel.Width, headerPanel.Height);
+            mainContentPanel.Size = new Size(this.ClientSize.Width - sidePanel.Width,
+                                             this.ClientSize.Height - headerPanel.Height);
+
+            this.ResumeLayout(true);
+        }
         private void RefreshButtonAppearance()
         {
             if (lblAdminTitle != null)

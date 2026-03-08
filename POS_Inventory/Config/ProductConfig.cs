@@ -34,7 +34,7 @@ namespace POS_Inventory.Config
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     cmd.ExecuteNonQuery();
 
-                    Console.WriteLine("Products table created or already exists.");
+                 //   Console.WriteLine("Products table created or already exists.");
                 }
                 catch (Exception ex)
                 {
