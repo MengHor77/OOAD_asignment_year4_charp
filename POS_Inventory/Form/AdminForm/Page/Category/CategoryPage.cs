@@ -164,7 +164,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             DataGridViewButtonColumn btnDelete = new DataGridViewButtonColumn
             {
                 Name = "Delete",
-                HeaderText = "",
+                HeaderText = "action",
                 Text = "delete",
                 UseColumnTextForButtonValue = true,
                 FlatStyle = FlatStyle.Flat,
