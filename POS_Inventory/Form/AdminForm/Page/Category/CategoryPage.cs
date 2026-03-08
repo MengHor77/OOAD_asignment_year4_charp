@@ -99,12 +99,14 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
 
             dgvCategory.CellContentClick += DgvCategory_CellContentClick;
 
-            // --- Pagination Placeholder ---
+             // --- Pagination Placeholder ---
             pnlPagination = new Panel
             {
-                Size = new Size(200, 50),
+                // Width set to match the total space of the 5 buttons (40 * 5)
+                Size = new Size(210, 50),
                 BackColor = Color.White,
-                Location = new Point(this.Width - 250, 450),
+                // (Table Width - Pagination Width) aligns it to the right edge of the table
+                Location = new Point(pnlTableContainer.Right - 200, pnlTableContainer.Bottom + 10),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             // Adding dummy pagination buttons to match photo
@@ -126,14 +128,15 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
                 Button btn = new Button
                 {
                     Text = b,
-                    Size = new Size(30, 30),
-                    Location = new Point(x, 10),
+                    Size = new Size(35, 35),
+                    Location = new Point(x, 7),
                     FlatStyle = FlatStyle.Flat,
-                    BackColor = (b == "2") ? Color.Orange : Color.White // Highlight active page
+                    BackColor = (b == "2") ? Color.Orange : AppColorConfig.White,
+                    Font = new Font("Segoe UI", 9, FontStyle.Bold)
                 };
                 btn.FlatAppearance.BorderColor = Color.LightGray;
                 pnlPagination.Controls.Add(btn);
-                x += 35;
+                x += 40;
             }
         }
 
