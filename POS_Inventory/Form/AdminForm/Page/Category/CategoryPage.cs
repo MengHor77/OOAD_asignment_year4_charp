@@ -41,7 +41,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             btnAdd = new Button
             {
                 Text = "Add new category",
-                BackColor = AppColorConfig.CardStaff, // Soft purple/blue
+                BackColor = AppColorConfig.BrandBlue, // Soft purple/blue
                 ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
                 Size = new Size(150, 40),
