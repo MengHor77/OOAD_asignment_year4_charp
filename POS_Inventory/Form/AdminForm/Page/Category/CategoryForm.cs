@@ -26,7 +26,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
 
         private void SetupLayout()
         {
-            this.Size = new Size(400, 250);
+            this.Size = new Size(400, 300);//400,250
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterParent;
             this.Text = categoryId == -1 ? "Add Category" : "Edit Category";
