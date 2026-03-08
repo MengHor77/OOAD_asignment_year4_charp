@@ -159,6 +159,12 @@
     <Compile Include="Form\AdminForm\SidebarItem.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Form\AdminForm\AdminLayout.resx">
+      <DependentUpon>AdminLayout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form\AdminForm\Page\Dashboard\DashboardPage.resx">
+      <DependentUpon>DashboardPage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

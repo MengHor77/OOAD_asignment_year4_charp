@@ -36,7 +36,11 @@ namespace POS_Inventory.Form.AdminForm
             SetupCollapseTimer();
             SetupLayoutDesign();
             InitializeSidebar();
-            LoadDashboardPage();
+            this.Load += (s, e) =>
+            {
+                LoadDashboardPage();
+                mainContentPanel.PerformLayout();
+            };
         }
 
         private void SetupCollapseTimer()
@@ -51,7 +55,7 @@ namespace POS_Inventory.Form.AdminForm
             // --- 0. FORM PROPERTIES ---
             this.DoubleBuffered = true;
             this.Text = "Admin POS";
-            this.Size = new Size(1100, 750);
+            this.Size = new Size(1300, 800); // Form width = 1100, height = 750
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.BackColor = AppColorConfig.ContentBackground;
@@ -330,6 +334,10 @@ namespace POS_Inventory.Form.AdminForm
             DashboardPage dashboard = new DashboardPage();
             dashboard.Dock = DockStyle.Fill;
             mainContentPanel.Controls.Add(dashboard);
+
+            mainContentPanel.PerformLayout();
+            mainContentPanel.Refresh();
+
         }
 
         private void PerformLogout()

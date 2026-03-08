@@ -136,5 +136,44 @@ namespace POS_Inventory.Config
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
+        public int GetTotalCashier()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+
+                    string query = "SELECT COUNT(*) FROM users WHERE role='Cashier'";
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public int GetTotalAdmin()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+
+                    string query = "SELECT COUNT(*) FROM users WHERE role='Admin'";
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
+        }
     }
 }
