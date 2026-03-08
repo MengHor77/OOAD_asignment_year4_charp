@@ -64,7 +64,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             dgvCategory = new DataGridView
             {
                 Dock = DockStyle.Fill,
-                BackgroundColor = AppColorConfig.BrandBlue,
+                BackgroundColor = AppColorConfig.White,
                 BorderStyle = BorderStyle.None,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
