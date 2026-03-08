@@ -154,6 +154,7 @@ namespace POS_Inventory.Form.AdminForm
                 new SidebarItem { Title = "Dasboard", IconText = "📊" },
                 new SidebarItem { Title = "Category", IconText = "📦" },
                 new SidebarItem { Title = "Product", IconText = "🛍️" },
+                new SidebarItem { Title = "Inventory", IconText = "🗃️" },
                 new SidebarItem { Title = "Staff", IconText = "👥" },
                 new SidebarItem { Title = "Report", IconText = "📈" },
                 new SidebarItem { Title = "Logout", IconText = "🚪" }
@@ -213,6 +214,10 @@ namespace POS_Inventory.Form.AdminForm
                     break;
 
                 case "Product":
+                    // Adjust the class name if your Product page is named differently
+                    pageToLoad = new ProductPage();
+                    break;
+                case "Inventory":
                     // Adjust the class name if your Product page is named differently
                     pageToLoad = new InventoryPage();
                     break;

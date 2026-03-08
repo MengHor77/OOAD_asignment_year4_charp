@@ -36,7 +36,12 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
                 AutoSize = true
             };
 
-            Label lblName = new Label { Text = "Category Name", Location = new Point(20, 50), AutoSize = true };
+            Label lblName = new Label {
+                Text = "Category Name", 
+                Location = new Point(20, 50), 
+                AutoSize = true,
+                Padding = new Padding(0, 20, 0, 0),// left, top, right, bottom
+            };
             txtCategoryName = new TextBox { Location = new Point(20, 70), Width = 300, Font = new Font("Segoe UI", 12) };
 
             // Buttons

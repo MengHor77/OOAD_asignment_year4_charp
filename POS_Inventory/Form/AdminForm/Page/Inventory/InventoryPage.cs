@@ -35,7 +35,9 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
                 Text = "Inventory & Stock Control",
                 Font = new Font("Segoe UI", 14, FontStyle.Bold),
                 Location = new Point(20, 10),
-                AutoSize = true
+                AutoSize = true,
+                Padding = new Padding(0, 0, 0, 20),// left, top, right, bottom
+
             };
 
             Label lblSearch = new Label { Text = "Search Product:", Location = new Point(20, 45), AutoSize = true };

@@ -29,7 +29,14 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             // --- 1. TOP INPUT PANEL ---
             Panel pnlInputs = new Panel { Dock = DockStyle.Top, Height = 180, BackColor = Color.FromArgb(240, 240, 240), Padding = new Padding(10) };
 
-            Label lblTitle = new Label { Text = "Product Management", Font = new Font("Segoe UI", 14, FontStyle.Bold), Location = new Point(20, 10), AutoSize = true };
+            Label lblTitle = new Label {
+                
+                Text = "Product Management",
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                Location = new Point(20, 10), AutoSize = true,
+              //  Padding = new Padding(0, 0, 0, 20),// left, top, right, bottom
+
+            };
 
             // Input Fields
             AddLabelAndControl(pnlInputs, "Product Name:", txtProductName = new TextBox { Width = 200 }, 20, 50);

@@ -28,7 +28,13 @@ namespace POS_Inventory.Form.AdminForm.Page.Staff
             // --- 1. INPUT PANEL (TOP) ---
             Panel pnlInputs = new Panel { Dock = DockStyle.Top, Height = 180, BackColor = Color.FromArgb(242, 242, 242), Padding = new Padding(15) };
 
-            Label lblTitle = new Label { Text = "Staff Management", Font = new Font("Segoe UI", 14, FontStyle.Bold), Location = new Point(20, 10), AutoSize = true };
+            Label lblTitle = new Label { 
+                Text = "Staff Management",
+                Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                Location = new Point(20, 10), AutoSize = true ,
+                Padding = new Padding(0, 20, 0, 0),// left, top, right, bottom
+
+            };
 
             // Row 1: Name and Username
             AddLabelAndControl(pnlInputs, "Full Name:", txtFullName = new TextBox { Width = 200 }, 20, 50);

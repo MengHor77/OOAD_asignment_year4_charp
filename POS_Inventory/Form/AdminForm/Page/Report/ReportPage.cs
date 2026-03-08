@@ -27,7 +27,12 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
             // --- 1. FILTER PANEL (TOP) ---
             Panel pnlFilter = new Panel { Dock = DockStyle.Top, Height = 80, BackColor = Color.FromArgb(245, 245, 245) };
 
-            Label lblFrom = new Label { Text = "From:", Location = new Point(20, 15), AutoSize = true };
+            Label lblFrom = new Label {
+                Text = "From:", Location = new Point(20, 15),
+                AutoSize = true,
+                Padding = new Padding(0, 20, 0, 0),// left, top, right, bottom
+
+            };
             dtFrom = new DateTimePicker { Location = new Point(20, 35), Width = 150, Format = DateTimePickerFormat.Short };
 
             Label lblTo = new Label { Text = "To:", Location = new Point(190, 15), AutoSize = true };
