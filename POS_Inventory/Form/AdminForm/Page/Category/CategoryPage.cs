@@ -32,7 +32,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             {
                 Text = "Category Management",
                 Font = new Font("Segoe UI", 16, FontStyle.Regular),
-                ForeColor = Color.Black,
+                ForeColor = AppColorConfig.TextDark,
                 Location = new Point(20, 20),
                 AutoSize = true
             };
@@ -41,7 +41,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             btnAdd = new Button
             {
                 Text = "Add new category",
-                BackColor = Color.FromArgb(180, 190, 230), // Soft purple/blue
+                BackColor = AppColorConfig.CardStaff, // Soft purple/blue
                 ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
                 Size = new Size(150, 40),
@@ -64,7 +64,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             dgvCategory = new DataGridView
             {
                 Dock = DockStyle.Fill,
-                BackgroundColor = Color.FromArgb(174, 214, 241),
+                BackgroundColor = AppColorConfig.BrandBlue,
                 BorderStyle = BorderStyle.None,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
@@ -80,7 +80,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             // Header Style
             dgvCategory.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
-                BackColor = Color.FromArgb(120, 160, 255), // Bright blue header
+                BackColor = AppColorConfig.CardProduct, // Bright blue header
                 ForeColor = Color.Black,
                 Font = new Font("Segoe UI", 11, FontStyle.Regular),
                 Alignment = DataGridViewContentAlignment.MiddleCenter
@@ -89,8 +89,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             // Cell Style
             dgvCategory.DefaultCellStyle = new DataGridViewCellStyle
             {
-                BackColor = Color.White,
-                ForeColor = Color.Black,
+                BackColor = AppColorConfig.White,
+                ForeColor = AppColorConfig.TextDark,
                 SelectionBackColor = Color.FromArgb(230, 240, 255),
                 SelectionForeColor = Color.Black,
                 Alignment = DataGridViewContentAlignment.MiddleCenter,
@@ -102,10 +102,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
              // --- Pagination Placeholder ---
             pnlPagination = new Panel
             {
-                // Width set to match the total space of the 5 buttons (40 * 5)
-                Size = new Size(210, 50),
-                BackColor = Color.White,
-                // (Table Width - Pagination Width) aligns it to the right edge of the table
+                 Size = new Size(210, 50),
+                BackColor = AppColorConfig.White,                // (Table Width - Pagination Width) aligns it to the right edge of the table
                 Location = new Point(pnlTableContainer.Right - 200, pnlTableContainer.Bottom + 10),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
@@ -159,8 +157,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
                 FlatStyle = FlatStyle.Flat,
                 Width = 60
             };
-            btnEdit.DefaultCellStyle.BackColor = Color.FromArgb(120, 150, 230);
-            btnEdit.DefaultCellStyle.ForeColor = Color.White;
+            btnEdit.DefaultCellStyle.BackColor = AppColorConfig.CardStaff;  
+            btnEdit.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
             dgvCategory.Columns.Add(btnEdit);
 
             // Delete Column
@@ -173,8 +171,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
                 FlatStyle = FlatStyle.Flat,
                 Width = 60
             };
-            btnDelete.DefaultCellStyle.BackColor = Color.FromArgb(230, 160, 150);
-            btnDelete.DefaultCellStyle.ForeColor = Color.White;
+            btnDelete.DefaultCellStyle.BackColor = AppColorConfig.HeaderPink;
+            btnDelete.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
             dgvCategory.Columns.Add(btnDelete);
 
             // Formatting column headers
