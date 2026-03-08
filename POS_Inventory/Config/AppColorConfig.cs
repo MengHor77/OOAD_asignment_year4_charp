@@ -23,8 +23,7 @@ namespace POS_Inventory.Config
         public static Color BrandBlue = Color.FromArgb(127, 185, 218);      // Light Blue Logo Box
 
         // Backgrounds
-        public static Color ContentBackground = Color.FromArgb(87, 153, 196); // Ocean Blue
-
+        public static Color ContentBackground = Color.White; // White background
         // Dashboard Cards
         public static Color CardStaff = Color.FromArgb(174, 192, 225);     // Light Blue Card
         public static Color CardProduct = Color.FromArgb(112, 160, 255);   // Vibrant Blue Card
