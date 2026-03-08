@@ -8,6 +8,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Dashboard
     public partial class DashboardPage : UserControl
     {
         private FlowLayoutPanel flowCards;
+        private Label lblTitle;
 
         public DashboardPage()
         {
@@ -19,15 +20,27 @@ namespace POS_Inventory.Form.AdminForm.Page.Dashboard
         private void SetupPage()
         {
             this.Dock = DockStyle.Fill;
-            this.BackColor = AppColorConfig.ContentBackground;
-            this.Padding = new Padding(20);
+            this.BackColor = Color.White;
 
+            // Title
+            lblTitle = new Label();
+            lblTitle.Text = "Dashboard Management";
+            lblTitle.Font = new Font("Segoe UI", 14, FontStyle.Bold);
+            lblTitle.ForeColor = Color.Black;
+            lblTitle.AutoSize = true;
+            lblTitle.Location = new Point(20, 10);
+
+            this.Controls.Add(lblTitle);
+
+            // Flow panel for cards
             flowCards = new FlowLayoutPanel();
-            flowCards.Dock = DockStyle.Fill;
-            flowCards.AutoScroll = true;
+            flowCards.Location = new Point(20, 50);
+            flowCards.Size = new Size(900, 200);
             flowCards.BackColor = Color.Transparent;
             flowCards.FlowDirection = FlowDirection.LeftToRight;
-            flowCards.WrapContents = true; // IMPORTANT: Allows cards to move to next line when sidebar grows
+            flowCards.WrapContents = false;
+            flowCards.AutoScroll = false;
+            flowCards.Padding = new Padding(0);
 
             this.Controls.Add(flowCards);
         }
@@ -36,30 +49,42 @@ namespace POS_Inventory.Form.AdminForm.Page.Dashboard
         {
             flowCards.Controls.Clear();
 
-            Panel cardStaff = CreateDashboardCard("Total Staff", AppColorConfig.CardStaff);
-            Panel cardProduct = CreateDashboardCard("Quick Products", AppColorConfig.CardProduct);
-            Panel cardReports = CreateDashboardCard("Monthly Sales", Color.LightBlue);
+            Panel cardStaff = CreateDashboardCard("Total Staff", "amount : 10", AppColorConfig.CardStaff);
+            Panel cardProduct = CreateDashboardCard("Quick Product", "", AppColorConfig.CardProduct);
+            Panel cardSales = CreateDashboardCard("Sale Today", "", Color.LightBlue);
 
             flowCards.Controls.Add(cardStaff);
             flowCards.Controls.Add(cardProduct);
-            flowCards.Controls.Add(cardReports);
+            flowCards.Controls.Add(cardSales);
         }
 
-        private Panel CreateDashboardCard(string text, Color bgColor)
+        private Panel CreateDashboardCard(string title, string value, Color bgColor)
         {
             Panel pnl = new Panel();
-            pnl.Size = new Size(250, 160);
+            pnl.Size = new Size(250, 120);
             pnl.BackColor = bgColor;
-            pnl.Margin = new Padding(0, 0, 20, 20);
+            pnl.Margin = new Padding(0, 0, 20, 0);
+            pnl.BorderStyle = BorderStyle.FixedSingle;
 
-            Label lbl = new Label();
-            lbl.Text = text;
-            lbl.ForeColor = AppColorConfig.TextDark;
-            lbl.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-            lbl.Dock = DockStyle.Fill;
-            lbl.TextAlign = ContentAlignment.MiddleCenter;
+            Label lblTitle = new Label();
+            lblTitle.Text = title;
+            lblTitle.Font = new Font("Segoe UI", 12, FontStyle.Bold);
+            lblTitle.ForeColor = Color.Black;
+            lblTitle.AutoSize = false;
+            lblTitle.TextAlign = ContentAlignment.MiddleCenter;
+            lblTitle.Dock = DockStyle.Top;
+            lblTitle.Height = 50;
 
-            pnl.Controls.Add(lbl);
+            Label lblValue = new Label();
+            lblValue.Text = value;
+            lblValue.Font = new Font("Segoe UI", 11, FontStyle.Regular);
+            lblValue.ForeColor = Color.Black;
+            lblValue.Dock = DockStyle.Fill;
+            lblValue.TextAlign = ContentAlignment.TopCenter;
+
+            pnl.Controls.Add(lblValue);
+            pnl.Controls.Add(lblTitle);
+
             return pnl;
         }
     }
