@@ -120,6 +120,12 @@
     <Compile Include="Form\AdminForm\AdminLayout.Designer.cs">
       <DependentUpon>AdminLayout.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\AdminForm\Page\Category\CategoryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Category\CategoryForm.Designer.cs">
+      <DependentUpon>CategoryForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form\AdminForm\Page\Category\CategoryPage.cs">
       <SubType>UserControl</SubType>
     </Compile>

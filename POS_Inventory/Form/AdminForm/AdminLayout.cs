@@ -214,12 +214,10 @@ namespace POS_Inventory.Form.AdminForm
                     break;
 
                 case "Product":
-                    // Adjust the class name if your Product page is named differently
-                    pageToLoad = new ProductPage();
+                     pageToLoad = new ProductPage();
                     break;
                 case "Inventory":
-                    // Adjust the class name if your Product page is named differently
-                    pageToLoad = new InventoryPage();
+                     pageToLoad = new InventoryPage();
                     break;
 
                 case "Staff":
@@ -231,8 +229,7 @@ namespace POS_Inventory.Form.AdminForm
                     break;
 
                 default:
-                    // Fallback if page isn't created yet
-                    Label lbl = new Label
+                     Label lbl = new Label
                     {
                         Text = title + " Page coming soon...",
                         Dock = DockStyle.Fill,

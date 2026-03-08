@@ -5,7 +5,7 @@ using System.Windows.Forms; // For MessageBox if running WinForms
 
 namespace POS_Inventory.Config
 {
-    internal class CategoryConfig
+    public class CategoryConfig
     {
         private readonly string connectionString = "server=localhost;port=3306;username=root;password=;database=pos_db;SslMode=none;ConnectionTimeout=30;";
 

@@ -6,16 +6,16 @@ using POS_Inventory.Config;
 
 namespace POS_Inventory.Form.AdminForm.Page.Category
 {
-     public partial class CategoryPage : UserControl
+    public partial class CategoryPage : UserControl
     {
         private DataGridView dgvCategory;
-        private TextBox txtCategoryName;
-        private Button btnAdd, btnUpdate, btnDelete, btnClear;
-        private int selectedId = -1;
+        private Button btnAdd;
+        private CategoryConfig categoryConfig;
 
         public CategoryPage()
         {
-            InitializeComponent(); // This calls the code in .Designer.cs
+            InitializeComponent();
+            categoryConfig = new CategoryConfig();
             SetupLayout();
             LoadData();
         }
@@ -25,40 +25,34 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             this.Dock = DockStyle.Fill;
             this.BackColor = Color.White;
 
-            // --- 1. TOP INPUT PANEL ---
-            Panel pnlInputs = new Panel { Dock = DockStyle.Top, Height = 150, BackColor = Color.FromArgb(245, 245, 245) };
-
+            // --- Top Panel ---
+            Panel pnlTop = new Panel { Dock = DockStyle.Top, Height = 60, BackColor = Color.White };
             Label lblTitle = new Label
             {
                 Text = "Category Management",
                 Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                Location = new Point(20, 10),
+                Location = new Point(20, 15),
                 AutoSize = true
             };
 
-            Label lblName = new Label {
-                Text = "Category Name", 
-                Location = new Point(20, 50), 
-                AutoSize = true,
-                Padding = new Padding(0, 20, 0, 0),// left, top, right, bottom
+            btnAdd = new Button
+            {
+                Text = "Add New",
+                BackColor = Color.FromArgb(40, 167, 69),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Size = new Size(100, 35),
+                Location = new Point(400, 12),
+                Cursor = Cursors.Hand
             };
-            txtCategoryName = new TextBox { Location = new Point(20, 70), Width = 300, Font = new Font("Segoe UI", 12) };
-
-            // Buttons
-            btnAdd = CreateBtn("Add New", Color.FromArgb(40, 167, 69), 20, 110);
-            btnUpdate = CreateBtn("Update", Color.FromArgb(255, 193, 7), 130, 110);
-            btnDelete = CreateBtn("Delete", Color.FromArgb(220, 53, 69), 240, 110);
-            btnClear = CreateBtn("Clear", Color.Gray, 350, 110);
-
-            // Events
+            btnAdd.FlatAppearance.BorderSize = 0;
             btnAdd.Click += BtnAdd_Click;
-            btnUpdate.Click += BtnUpdate_Click;
-            btnDelete.Click += BtnDelete_Click;
-            btnClear.Click += (s, e) => ClearForm();
 
-            pnlInputs.Controls.AddRange(new Control[] { lblTitle, lblName, txtCategoryName, btnAdd, btnUpdate, btnDelete, btnClear });
+            pnlTop.Controls.Add(lblTitle);
+            pnlTop.Controls.Add(btnAdd);
 
-            // --- 2. GRID VIEW ---
+            // --- DataGridView ---
             dgvCategory = new DataGridView
             {
                 Dock = DockStyle.Fill,
@@ -72,89 +66,60 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             dgvCategory.CellClick += DgvCategory_CellClick;
 
             this.Controls.Add(dgvCategory);
-            this.Controls.Add(pnlInputs);
+            this.Controls.Add(pnlTop);
         }
-
-        private Button CreateBtn(string text, Color backColor, int x, int y)
-        {
-            Button btn = new Button
-            {
-                Text = text,
-                Size = new Size(100, 35),
-                Location = new Point(x, y),
-                BackColor = backColor,
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                Cursor = Cursors.Hand
-            };
-            btn.FlatAppearance.BorderSize = 0;
-            return btn;
-        }
-
-        // --- DATABASE LOGIC (CRUD) ---
 
         private void LoadData()
         {
-            try
-            {
-                // Replace this with your actual DB helper:
-                // dgvCategory.DataSource = dbHelper.GetDataTable("SELECT id, category_name FROM categories");
+            DataTable dt = categoryConfig.GetAllCategories();
 
-                // Temporary Dummy Data for testing UI
-                DataTable dt = new DataTable();
-                dt.Columns.Add("ID");
-                dt.Columns.Add("Category Name");
-                dt.Rows.Add(1, "Food");
-                dt.Rows.Add(2, "Drinks");
-                dgvCategory.DataSource = dt;
-            }
-            catch (Exception ex) { MessageBox.Show(ex.Message); }
-        }
+            // Add Action Buttons column
+            if (!dt.Columns.Contains("Action"))
+                dt.Columns.Add("Action", typeof(string));
 
-        private void DgvCategory_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
+            foreach (DataRow row in dt.Rows)
+                row["Action"] = "Edit";
+
+            dgvCategory.DataSource = dt;
+
+            // Add Button Column for Edit
+            if (!dgvCategory.Columns.Contains("btnEdit"))
             {
-                DataGridViewRow row = dgvCategory.Rows[e.RowIndex];
-                selectedId = Convert.ToInt32(row.Cells["ID"].Value);
-                txtCategoryName.Text = row.Cells["Category Name"].Value.ToString();
+                DataGridViewButtonColumn btnCol = new DataGridViewButtonColumn
+                {
+                    Name = "btnEdit",
+                    HeaderText = "Action",
+                    Text = "Edit",
+                    UseColumnTextForButtonValue = true
+                };
+                dgvCategory.Columns.Add(btnCol);
             }
+
+            dgvCategory.Columns["id"].HeaderText = "ID";
+            dgvCategory.Columns["category_name"].HeaderText = "Category Name";
+            dgvCategory.Columns["description"].HeaderText = "Description";
         }
 
         private void BtnAdd_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtCategoryName.Text)) return;
-            // DB logic: INSERT INTO categories (category_name) VALUES (@name)
-            MessageBox.Show("Category Added Successfully!");
-            LoadData();
-            ClearForm();
-        }
-
-        private void BtnUpdate_Click(object sender, EventArgs e)
-        {
-            if (selectedId == -1) return;
-            // DB logic: UPDATE categories SET category_name = @name WHERE id = @id
-            MessageBox.Show("Category Updated!");
-            LoadData();
-        }
-
-        private void BtnDelete_Click(object sender, EventArgs e)
-        {
-            if (selectedId == -1) return;
-            var confirm = MessageBox.Show("Delete this category?", "Confirm", MessageBoxButtons.YesNo);
-            if (confirm == DialogResult.Yes)
+            using (CategoryForm form = new CategoryForm(categoryConfig))
             {
-                // DB logic: DELETE FROM categories WHERE id = @id
+                form.ShowDialog();
                 LoadData();
-                ClearForm();
             }
         }
 
-        private void ClearForm()
+        private void DgvCategory_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            txtCategoryName.Clear();
-            selectedId = -1;
+            if (e.RowIndex >= 0 && dgvCategory.Columns[e.ColumnIndex].Name == "btnEdit")
+            {
+                int id = Convert.ToInt32(dgvCategory.Rows[e.RowIndex].Cells["id"].Value);
+                using (CategoryForm form = new CategoryForm(categoryConfig, id))
+                {
+                    form.ShowDialog();
+                    LoadData();
+                }
+            }
         }
     }
 }
