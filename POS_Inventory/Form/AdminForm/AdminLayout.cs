@@ -4,6 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using POS_Inventory;
+using POS_Inventory.Form.AdminForm.Page.Category;
+using POS_Inventory.Form.AdminForm.Page.Inventory;
+using POS_Inventory.Form.AdminForm.Page.Product;
+using POS_Inventory.Form.AdminForm.Page.Staff;
+using POS_Inventory.Form.AdminForm.Page.Report;
 
 namespace POS_Inventory.Form.AdminForm
 {
@@ -20,8 +26,8 @@ namespace POS_Inventory.Form.AdminForm
         // Collapse variables
         private Timer sidebarTimer;
         private bool isCollapsed = false;
-        private const int ExpandedWidth = 140;
-        private const int CollapsedWidth = 50;
+        private const int ExpandedWidth = 180;
+        private const int CollapsedWidth = 80;
 
         public AdminLayout()
         {
@@ -41,56 +47,60 @@ namespace POS_Inventory.Form.AdminForm
 
         private void SetupLayoutDesign()
         {
+            // --- 0. FORM PROPERTIES ---
+            this.DoubleBuffered = true;
             this.Text = "Admin POS";
             this.Size = new Size(1100, 750);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            this.BackColor = AppColorConfix.ContentBackground;
+            this.BackColor = AppColorConfig.ContentBackground;
 
-            // 1. Initialize Side Panel
+            // --- 1. INITIALIZE THE "SLOT" (Main Content Panel) ---
+            mainContentPanel = new Panel();
+            mainContentPanel.Dock = DockStyle.Fill;
+            mainContentPanel.BackColor = AppColorConfig.ContentBackground;
+            mainContentPanel.Padding = new Padding(0);
+
+            // --- 2. SIDE PANEL (Docked Left) ---
             sidePanel = new Panel();
             sidePanel.Dock = DockStyle.Left;
             sidePanel.Width = ExpandedWidth;
-            sidePanel.BackColor = AppColorConfix.SidebarRed;
-            this.Controls.Add(sidePanel);
+            sidePanel.BackColor = AppColorConfig.SidebarRed;
 
-            // 2. Initialize Header Panel
+            // --- 3. HEADER PANEL (Docked Top) ---
             headerPanel = new Panel();
             headerPanel.Dock = DockStyle.Top;
             headerPanel.Height = 50;
-            headerPanel.BackColor = AppColorConfix.HeaderPink;
-            this.Controls.Add(headerPanel);
+            headerPanel.BackColor = AppColorConfig.HeaderPink;
 
-            // 3. Initialize Main Content Panel
-            mainContentPanel = new Panel();
-            mainContentPanel.Dock = DockStyle.Fill;
-            mainContentPanel.BackColor = AppColorConfix.ContentBackground;
+            // --- 4. ADD TO FORM & SET Z-ORDER (CRITICAL FOR RESIZING) ---
+            // We add them in this specific order, then adjust depth
             this.Controls.Add(mainContentPanel);
+            this.Controls.Add(headerPanel);
+            this.Controls.Add(sidePanel);
 
-            // Z-ORDER: Sidebar and Header must be on top
-            mainContentPanel.SendToBack();
             sidePanel.BringToFront();
             headerPanel.BringToFront();
+            mainContentPanel.SendToBack(); // Sends the slot to the back so it fills remaining space
 
-            // 4. Header UI Elements (Hamburger Button)
+            // --- 5. HEADER UI ELEMENTS ---
             Label btnMenu = new Label();
             btnMenu.Text = "≡";
             btnMenu.Font = new Font("Segoe UI", 18, FontStyle.Bold);
-            btnMenu.ForeColor = AppColorConfix.TextDark;
+            btnMenu.ForeColor = AppColorConfig.TextDark;
             btnMenu.Cursor = Cursors.Hand;
-            btnMenu.AutoSize = false;
             btnMenu.Size = new Size(45, 45);
             btnMenu.TextAlign = ContentAlignment.MiddleCenter;
             btnMenu.Location = new Point(2, 2);
             btnMenu.Click += (s, e) => sidebarTimer.Start();
 
-            btnMenu.MouseEnter += (s, e) => btnMenu.BackColor = AppColorConfix.SidebarHover;
+            btnMenu.MouseEnter += (s, e) => btnMenu.BackColor = AppColorConfig.SidebarHover;
             btnMenu.MouseLeave += (s, e) => btnMenu.BackColor = Color.Transparent;
             headerPanel.Controls.Add(btnMenu);
 
             Label lblWelcome = new Label();
             lblWelcome.Text = "Welcome Admin!";
-            lblWelcome.ForeColor = AppColorConfix.TextDark;
+            lblWelcome.ForeColor = AppColorConfig.TextDark;
             lblWelcome.Font = new Font("Segoe UI", 10, FontStyle.Bold);
             lblWelcome.Location = new Point(60, 15);
             lblWelcome.AutoSize = true;
@@ -98,21 +108,27 @@ namespace POS_Inventory.Form.AdminForm
 
             AddHeaderLink("Logout", 60);
             AddHeaderLink("profile", 130);
+            // --- Add this at the very bottom of SetupLayoutDesign ---
+            this.Load += (s, e) => {
+                sidePanel.BringToFront();
+                headerPanel.BringToFront();
+                mainContentPanel.SendToBack();
+            };
         }
 
         public void InitializeSidebar()
         {
             sidePanel.Controls.Clear();
 
-            // 1. Create the Top Branding Panel first
+            // 1. Branding Panel (Container)
             pnlSidebarBranding = new Panel();
             pnlSidebarBranding.Dock = DockStyle.Top;
-            pnlSidebarBranding.Height = 50; // Aligns with header
-            pnlSidebarBranding.BackColor = AppColorConfix.SidebarHover;
+            pnlSidebarBranding.Height = 50;
+            pnlSidebarBranding.BackColor = AppColorConfig.SidebarHover;
 
             lblAdminTitle = new Label();
-            lblAdminTitle.Text = isCollapsed ? "AP" : "Admin POS";
-            lblAdminTitle.ForeColor = AppColorConfix.TextDark;
+            lblAdminTitle.Text = isCollapsed ? "Admin" : "Admin POS";
+            lblAdminTitle.ForeColor = AppColorConfig.TextDark;
             lblAdminTitle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
             lblAdminTitle.Dock = DockStyle.Fill;
             lblAdminTitle.TextAlign = ContentAlignment.MiddleCenter;
@@ -120,26 +136,27 @@ namespace POS_Inventory.Form.AdminForm
             pnlSidebarBranding.Controls.Add(lblAdminTitle);
             sidePanel.Controls.Add(pnlSidebarBranding);
 
-            // 2. Define Menu Items in order
+            // 2. Menu Items
             List<SidebarItem> menuItems = new List<SidebarItem>()
-    {
-        new SidebarItem { Title = "Dasboard", IconText = "📊" },
-        new SidebarItem { Title = "Category", IconText = "📦" },
-        new SidebarItem { Title = "Product", IconText = "🛍️" },
-        new SidebarItem { Title = "Staff", IconText = "👥" },
-        new SidebarItem { Title = "Report", IconText = "📈" },
-        new SidebarItem { Title = "Logout", IconText = "🚪" }
-    };
+            {
+                new SidebarItem { Title = "Dasboard", IconText = "📊" },
+                new SidebarItem { Title = "Category", IconText = "📦" },
+                new SidebarItem { Title = "Product", IconText = "🛍️" },
+                new SidebarItem { Title = "Staff", IconText = "👥" },
+                new SidebarItem { Title = "Report", IconText = "📈" },
+                new SidebarItem { Title = "Logout", IconText = "🚪" }
+            };
 
-            // 3. Add buttons in reverse order for correct Docking stack
+            // 3. Add buttons in reverse order because of DockStyle.Top stack
             for (int i = menuItems.Count - 1; i >= 0; i--)
             {
                 sidePanel.Controls.Add(CreateMenuButton(menuItems[i]));
             }
 
-            // 4. Force Branding to stay at the absolute top
+            // 4. Ensure branding stays at the very top
             pnlSidebarBranding.SendToBack();
         }
+
         private Button CreateMenuButton(SidebarItem item)
         {
             Button btn = new Button();
@@ -149,15 +166,14 @@ namespace POS_Inventory.Form.AdminForm
             btn.Height = 50;
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
-            btn.ForeColor = AppColorConfix.TextDark;
+            btn.ForeColor = AppColorConfig.TextDark;
             btn.Font = new Font("Segoe UI", 10);
             btn.TextAlign = ContentAlignment.MiddleLeft;
             btn.Padding = new Padding(10, 0, 0, 0);
             btn.Cursor = Cursors.Hand;
 
-            btn.MouseEnter += (s, e) => btn.BackColor = AppColorConfix.SidebarHover;
-            btn.MouseLeave += (s, e) => btn.BackColor = AppColorConfix.SidebarRed;
-
+            btn.MouseEnter += (s, e) => btn.BackColor = AppColorConfig.SidebarHover;
+            btn.MouseLeave += (s, e) => btn.BackColor = AppColorConfig.SidebarRed;
             btn.Click += (s, e) => {
                 if (item.Title == "Logout") PerformLogout();
                 else NavigateToPage(item.Title);
@@ -168,75 +184,104 @@ namespace POS_Inventory.Form.AdminForm
 
         private void NavigateToPage(string title)
         {
+            // 1. Clear the current page from the main panel
             mainContentPanel.Controls.Clear();
-            if (title == "Dasboard") LoadDashboardPage();
-            else
+
+            // 2. Identify which page to load based on the button title
+            UserControl pageToLoad = null;
+
+            switch (title)
             {
-                Label lbl = new Label { Text = title + " Page coming soon...", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, Font = new Font("Segoe UI", 12) };
-                mainContentPanel.Controls.Add(lbl);
+                case "Dasboard":
+                    pageToLoad = new DashboardPage();
+                    break;
+
+                case "Category":
+                    pageToLoad = new CategoryPage();
+                    break;
+
+                case "Product":
+                    // Adjust the class name if your Product page is named differently
+                    pageToLoad = new InventoryPage();
+                    break;
+
+                case "Staff":
+                    pageToLoad = new StaffPage();
+                    break;
+
+                case "Report":
+                    pageToLoad = new ReportPage();
+                    break;
+
+                default:
+                    // Fallback if page isn't created yet
+                    Label lbl = new Label
+                    {
+                        Text = title + " Page coming soon...",
+                        Dock = DockStyle.Fill,
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Font = new Font("Segoe UI", 12)
+                    };
+                    mainContentPanel.Controls.Add(lbl);
+                    return;
+            }
+
+            // 3. Configure the page to fill the panel and add it
+            if (pageToLoad != null)
+            {
+                pageToLoad.Dock = DockStyle.Fill;
+                mainContentPanel.Controls.Add(pageToLoad);
             }
         }
-
         private void SidebarTimer_Tick(object sender, EventArgs e)
         {
+            this.SuspendLayout();
+
             if (isCollapsed)
             {
                 sidePanel.Width += 10;
+
                 if (sidePanel.Width >= ExpandedWidth)
                 {
-                    sidePanel.Width = ExpandedWidth;
-                    isCollapsed = false;
                     sidebarTimer.Stop();
+                    isCollapsed = false;
                     RefreshButtonAppearance();
                 }
             }
             else
             {
                 sidePanel.Width -= 10;
+
                 if (sidePanel.Width <= CollapsedWidth)
                 {
-                    sidePanel.Width = CollapsedWidth;
-                    isCollapsed = true;
                     sidebarTimer.Stop();
+                    isCollapsed = true;
                     RefreshButtonAppearance();
                 }
             }
-        }
 
+            this.ResumeLayout(true);
+        }
         private void RefreshButtonAppearance()
         {
-            // 1. Update Top Branding Text (Admin POS)
             if (lblAdminTitle != null)
             {
-                if (isCollapsed)
-                {
-                    // Show short version when sidebar is 50px
-                    lblAdminTitle.Text = "AP";
-                    lblAdminTitle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-                }
-                else
-                {
-                    // Show full title when sidebar is 140px
-                    lblAdminTitle.Text = "Admin POS";
-                    lblAdminTitle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
-                }
+                lblAdminTitle.Text = isCollapsed ? "Admin" : "Admin POS";
+                lblAdminTitle.Font = new Font("Segoe UI", isCollapsed ? 10 : 11, FontStyle.Bold);
             }
 
-            // 2. Update Sidebar Buttons (Dashboard, Category, etc.)
             foreach (Control ctrl in sidePanel.Controls)
             {
                 if (ctrl is Button btn && btn.Tag is SidebarItem item)
                 {
                     if (isCollapsed)
                     {
-                        // Minimized: Show only Icon
                         btn.TextAlign = ContentAlignment.MiddleCenter;
                         btn.Padding = new Padding(0);
                         btn.Text = item.IconText;
                     }
                     else
                     {
-                        // Expanded: Show Icon + Text
                         btn.TextAlign = ContentAlignment.MiddleLeft;
                         btn.Padding = new Padding(10, 0, 0, 0);
                         btn.Text = "    " + item.IconText + "    " + item.Title;
@@ -244,13 +289,14 @@ namespace POS_Inventory.Form.AdminForm
                 }
             }
         }
+
         private void AddHeaderLink(string text, int rightOffset)
         {
             Label lbl = new Label();
             lbl.Text = text;
             lbl.AutoSize = true;
             lbl.Cursor = Cursors.Hand;
-            lbl.ForeColor = AppColorConfix.TextDark;
+            lbl.ForeColor = AppColorConfig.TextDark;
             lbl.Font = new Font("Segoe UI", 9, FontStyle.Underline);
             lbl.Location = new Point(headerPanel.Width - rightOffset, 15);
             lbl.Anchor = AnchorStyles.Right | AnchorStyles.Top;
@@ -262,6 +308,7 @@ namespace POS_Inventory.Form.AdminForm
         {
             mainContentPanel.Controls.Clear();
             DashboardPage dashboard = new DashboardPage();
+            dashboard.Dock = DockStyle.Fill;
             mainContentPanel.Controls.Add(dashboard);
         }
 
@@ -269,7 +316,11 @@ namespace POS_Inventory.Form.AdminForm
         {
             if (MessageBox.Show("Are you sure you want to logout?", "Logout", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                this.Close();
+                 FormLogin loginForm = new FormLogin();
+
+                 loginForm.Show();
+
+                 this.Close();
             }
         }
     }

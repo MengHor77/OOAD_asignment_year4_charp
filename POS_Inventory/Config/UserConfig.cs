@@ -7,7 +7,7 @@ namespace POS_Inventory.Config
 {
     internal class UserConfig
     {
-        private readonly string connectionString = "datasource=127.0.0.1;port=3306;username=root;password=;database=pos_db;";
+        private readonly string connectionString = "server=localhost;port=3306;username=root;password=;database=pos_db;SslMode=none;ConnectionTimeout=30;";
 
         public UserConfig()
         {

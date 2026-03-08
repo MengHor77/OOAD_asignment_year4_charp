@@ -32,18 +32,18 @@ namespace POS_Inventory
             this.Size = new Size(400, 600);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.None;
-            this.BackColor = AppColorConfix.PrimaryBlue;
+            this.BackColor = AppColorConfig.PrimaryBlue;
 
             cardPanel = new Panel();
             cardPanel.Size = new Size(340, 480);
             cardPanel.Location = new Point((this.ClientSize.Width - cardPanel.Width) / 2, 60);
-            cardPanel.BackColor = AppColorConfix.Transparent;
+            cardPanel.BackColor = AppColorConfig.Transparent;
             this.Controls.Add(cardPanel);
 
             lblTitle = new Label();
             lblTitle.Text = "Welcome Back!";
             lblTitle.Font = new Font("Segoe UI", 22, FontStyle.Bold);
-            lblTitle.ForeColor = AppColorConfix.White;
+            lblTitle.ForeColor = AppColorConfig.White;
             lblTitle.Size = new Size(340, 50);
             lblTitle.TextAlign = ContentAlignment.MiddleCenter;
             cardPanel.Controls.Add(lblTitle);
@@ -63,12 +63,12 @@ namespace POS_Inventory
             btnTogglePass.Location = new Point(250, 175);
             btnTogglePass.FlatStyle = FlatStyle.Flat;
             btnTogglePass.FlatAppearance.BorderSize = 0;
-            btnTogglePass.ForeColor = AppColorConfix.White;
+            btnTogglePass.ForeColor = AppColorConfig.White;
             btnTogglePass.Cursor = Cursors.Hand;
             btnTogglePass.Click += BtnTogglePass_Click;
             cardPanel.Controls.Add(btnTogglePass);
 
-            Label lblRole = new Label() { Text = "Select Role:", ForeColor = AppColorConfix.White, Location = new Point(40, 230), AutoSize = true };
+            Label lblRole = new Label() { Text = "Select Role:", ForeColor = AppColorConfig.White, Location = new Point(40, 230), AutoSize = true };
             cmbRole = new ComboBox();
             cmbRole.Items.AddRange(new string[] { "Admin", "Cashier" });
             cmbRole.SelectedIndex = 0;
@@ -82,8 +82,8 @@ namespace POS_Inventory
             btnLogin.Text = "LOGIN";
             btnLogin.Size = new Size(260, 50);
             btnLogin.Location = new Point(40, 320);
-            btnLogin.BackColor = AppColorConfix.White;
-            btnLogin.ForeColor = AppColorConfix.LoginBtnText;
+            btnLogin.BackColor = AppColorConfig.White;
+            btnLogin.ForeColor = AppColorConfig.LoginBtnText;
             btnLogin.FlatStyle = FlatStyle.Flat;
             btnLogin.Font = new Font("Segoe UI", 12, FontStyle.Bold);
             btnLogin.Cursor = Cursors.Hand;
@@ -99,7 +99,7 @@ namespace POS_Inventory
 
             lblForgotPassword = new Label();
             lblForgotPassword.Text = "forgot password?";
-            lblForgotPassword.ForeColor = AppColorConfix.PlaceholderWhite;
+            lblForgotPassword.ForeColor = AppColorConfig.PlaceholderWhite;
             lblForgotPassword.Location = new Point(0, 390);
             lblForgotPassword.Size = new Size(340, 20);
             lblForgotPassword.TextAlign = ContentAlignment.MiddleCenter;
@@ -107,7 +107,7 @@ namespace POS_Inventory
             lblForgotPassword.Click += (s, e) => MessageBox.Show("Contact Admin.");
             cardPanel.Controls.Add(lblForgotPassword);
 
-            Button btnExit = new Button() { Text = "✕", Size = new Size(30, 30), Location = new Point(360, 0), FlatStyle = FlatStyle.Flat, ForeColor = AppColorConfix.White };
+            Button btnExit = new Button() { Text = "✕", Size = new Size(30, 30), Location = new Point(360, 0), FlatStyle = FlatStyle.Flat, ForeColor = AppColorConfig.White };
             btnExit.FlatAppearance.BorderSize = 0;
             btnExit.FlatAppearance.MouseOverBackColor = Color.Red;
             btnExit.Click += (s, e) => Application.Exit();
@@ -120,12 +120,12 @@ namespace POS_Inventory
             tb.Size = new Size(260, 30);
             tb.Location = new Point(40, y + 5);
             tb.Font = new Font("Segoe UI", 12);
-            tb.BackColor = AppColorConfix.PrimaryBlue;
-            tb.ForeColor = AppColorConfix.White;
+            tb.BackColor = AppColorConfig.PrimaryBlue;
+            tb.ForeColor = AppColorConfig.White;
             tb.BorderStyle = BorderStyle.None;
             // Note: In a real app, you'd add logic here to handle the placeholder text disappearance
 
-            Panel line = new Panel() { Size = new Size(260, 2), Location = new Point(40, y + 35), BackColor = AppColorConfix.White };
+            Panel line = new Panel() { Size = new Size(260, 2), Location = new Point(40, y + 35), BackColor = AppColorConfig.White };
             cardPanel.Controls.Add(line);
             return tb;
         }
@@ -133,7 +133,7 @@ namespace POS_Inventory
         protected override void OnPaint(PaintEventArgs e)
         {
             using (LinearGradientBrush brush = new LinearGradientBrush(this.ClientRectangle,
-                AppColorConfix.GradientStart, AppColorConfix.GradientEnd, 45f))
+                AppColorConfig.GradientStart, AppColorConfig.GradientEnd, 45f))
             {
                 e.Graphics.FillRectangle(brush, this.ClientRectangle);
             }

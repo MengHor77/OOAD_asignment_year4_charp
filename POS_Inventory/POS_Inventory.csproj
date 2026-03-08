@@ -36,6 +36,9 @@
     <Reference Include="BCrypt.Net-Next, Version=4.1.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.1.0\lib\net472\BCrypt.Net-Next.dll</HintPath>
     </Reference>
+    <Reference Include="BouncyCastle.Crypto, Version=1.9.0.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>..\packages\Portable.BouncyCastle.1.9.0\lib\net40\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
       <HintPath>..\packages\BouncyCastle.Cryptography.2.6.2\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
     </Reference>
@@ -54,8 +57,8 @@
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
-    <Reference Include="MySql.Data, Version=9.6.0.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MySql.Data.9.6.0\lib\net462\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=8.1.0.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.8.1.0\lib\net462\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -66,6 +69,9 @@
       <HintPath>..\packages\System.Configuration.ConfigurationManager.8.0.0\lib\net462\System.Configuration.ConfigurationManager.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=7.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.7.0.2\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
     <Reference Include="System.IO.Pipelines, Version=5.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.Pipelines.5.0.2\lib\net461\System.IO.Pipelines.dll</HintPath>
     </Reference>
@@ -98,7 +104,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\AppColorConfix.cs" />
+    <Compile Include="Config\AppColorConfig.cs" />
+    <Compile Include="Config\CategoryConfig.cs" />
+    <Compile Include="Config\ProductConfig.cs" />
     <Compile Include="Config\UserConfig.cs" />
     <Compile Include="FormLogin.cs">
       <SubType>Form</SubType>
@@ -112,11 +120,41 @@
     <Compile Include="Form\AdminForm\AdminLayout.Designer.cs">
       <DependentUpon>AdminLayout.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\AdminForm\Page\Category\CategoryPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Category\CategoryPage.Designer.cs">
+      <DependentUpon>CategoryPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form\AdminForm\Page\Dashboard\DashboardPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Form\AdminForm\Page\Dashboard\DashboardPage.Designer.cs">
       <DependentUpon>DashboardPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Inventory\InventoryPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Inventory\InventoryPage.Designer.cs">
+      <DependentUpon>InventoryPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Product\ProductPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Product\ProductPage.Designer.cs">
+      <DependentUpon>ProductPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Report\ReportPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Report\ReportPage.Designer.cs">
+      <DependentUpon>ReportPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Staff\StaffPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Staff\StaffPage.Designer.cs">
+      <DependentUpon>StaffPage.cs</DependentUpon>
     </Compile>
     <Compile Include="Form\AdminForm\SidebarItem.cs" />
     <Compile Include="Program.cs" />
@@ -145,11 +183,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Form\AdminForm\Page\Category\" />
-    <Folder Include="Form\AdminForm\Page\Inventory\" />
-    <Folder Include="Form\AdminForm\Page\Product\" />
-    <Folder Include="Form\AdminForm\Page\Report\" />
-    <Folder Include="Form\AdminForm\Page\Staff\" />
     <Folder Include="Form\POSForm\" />
     <Folder Include="Model\" />
   </ItemGroup>

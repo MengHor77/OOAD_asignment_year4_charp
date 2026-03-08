@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace POS_Inventory.Config
 {
-    internal class AppColorConfix
+    internal class AppColorConfig
     {
         // --- YOUR OLD COLORS (Preserved) ---
         public static Color PrimaryBlue = Color.FromArgb(41, 128, 185);
