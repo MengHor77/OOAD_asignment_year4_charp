@@ -24,7 +24,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
         private void SetupLayout()
         {
             this.Dock = DockStyle.Fill;
-            this.BackColor = Color.FromArgb(174, 214, 241); // Light blue background from photo
+            this.BackColor = AppColorConfig.ContentBackground;
             this.Padding = new Padding(20);
 
             // --- Header Label ---
