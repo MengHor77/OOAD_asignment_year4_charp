@@ -55,7 +55,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             pnlTableContainer = new Panel
             {
                 Location = new Point(20, 130),
-                Size = new Size(this.Width - 40, 300),
+                Size = new Size(this.Width - 40, 400),
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 BackColor = Color.Transparent
             };
