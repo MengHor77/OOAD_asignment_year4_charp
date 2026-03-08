@@ -55,67 +55,74 @@ namespace POS_Inventory.Form.AdminForm
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.BackColor = AppColorConfig.ContentBackground;
 
-            // --- 1. INITIALIZE THE "SLOT" (Main Content Panel) ---
-            mainContentPanel = new Panel();
-            mainContentPanel.Dock = DockStyle.Fill;
-            mainContentPanel.BackColor = AppColorConfig.ContentBackground;
-            mainContentPanel.Padding = new Padding(0);
-
-            // --- 2. SIDE PANEL (Docked Left) ---
+            // --- 1. SIDE PANEL (Docked Left) ---
             sidePanel = new Panel();
             sidePanel.Dock = DockStyle.Left;
             sidePanel.Width = ExpandedWidth;
             sidePanel.BackColor = AppColorConfig.SidebarRed;
 
-            // --- 3. HEADER PANEL (Docked Top) ---
+            // --- 2. HEADER PANEL (Docked Top) ---
             headerPanel = new Panel();
             headerPanel.Dock = DockStyle.Top;
             headerPanel.Height = 50;
             headerPanel.BackColor = AppColorConfig.HeaderPink;
 
-            // --- 4. ADD TO FORM & SET Z-ORDER (CRITICAL FOR RESIZING) ---
-            // We add them in this specific order, then adjust depth
+            // --- 3. MAIN CONTENT PANEL ---
+            mainContentPanel = new Panel();
+            mainContentPanel.BackColor = AppColorConfig.ContentBackground;
+            mainContentPanel.Padding = new Padding(0);
+
+            // Set initial location and size based on sidebar and header
+            mainContentPanel.Location = new Point(sidePanel.Width, headerPanel.Height);
+            mainContentPanel.Size = new Size(this.ClientSize.Width - sidePanel.Width,
+                                             this.ClientSize.Height - headerPanel.Height);
+
+            // --- 4. ADD PANELS TO FORM (Z-ORDER) ---
             this.Controls.Add(mainContentPanel);
             this.Controls.Add(headerPanel);
             this.Controls.Add(sidePanel);
 
             sidePanel.BringToFront();
             headerPanel.BringToFront();
-            mainContentPanel.SendToBack(); // Sends the slot to the back so it fills remaining space
+            mainContentPanel.SendToBack();
 
             // --- 5. HEADER UI ELEMENTS ---
-            Label btnMenu = new Label();
-            btnMenu.Text = "≡";
-            btnMenu.Font = new Font("Segoe UI", 18, FontStyle.Bold);
-            btnMenu.ForeColor = AppColorConfig.TextDark;
-            btnMenu.Cursor = Cursors.Hand;
-            btnMenu.Size = new Size(45, 45);
-            btnMenu.TextAlign = ContentAlignment.MiddleCenter;
-            btnMenu.Location = new Point(2, 2);
+            Label btnMenu = new Label()
+            {
+                Text = "≡",
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
+                ForeColor = AppColorConfig.TextDark,
+                Cursor = Cursors.Hand,
+                Size = new Size(45, 45),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Location = new Point(2, 2)
+            };
             btnMenu.Click += (s, e) => sidebarTimer.Start();
-
             btnMenu.MouseEnter += (s, e) => btnMenu.BackColor = AppColorConfig.SidebarHover;
             btnMenu.MouseLeave += (s, e) => btnMenu.BackColor = Color.Transparent;
             headerPanel.Controls.Add(btnMenu);
 
-            Label lblWelcome = new Label();
-            lblWelcome.Text = "Welcome Admin!";
-            lblWelcome.ForeColor = AppColorConfig.TextDark;
-            lblWelcome.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            lblWelcome.Location = new Point(60, 15);
-            lblWelcome.AutoSize = true;
+            Label lblWelcome = new Label()
+            {
+                Text = "Welcome Admin!",
+                ForeColor = AppColorConfig.TextDark,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Location = new Point(60, 15),
+                AutoSize = true
+            };
             headerPanel.Controls.Add(lblWelcome);
 
             AddHeaderLink("Logout", 60);
             AddHeaderLink("profile", 130);
-            // --- Add this at the very bottom of SetupLayoutDesign ---
-            this.Load += (s, e) => {
+
+            // Ensure panels are properly layered after form loads
+            this.Load += (s, e) =>
+            {
                 sidePanel.BringToFront();
                 headerPanel.BringToFront();
                 mainContentPanel.SendToBack();
             };
         }
-
         public void InitializeSidebar()
         {
             sidePanel.Controls.Clear();
@@ -259,6 +266,9 @@ namespace POS_Inventory.Form.AdminForm
                     RefreshButtonAppearance();
                 }
             }
+            mainContentPanel.Location = new Point(sidePanel.Width, headerPanel.Height);
+            mainContentPanel.Size = new Size(this.ClientSize.Width - sidePanel.Width, this.ClientSize.Height - headerPanel.Height);
+
 
             this.ResumeLayout(true);
         }
