@@ -97,7 +97,7 @@ namespace POS_Inventory.Form.AdminForm
                 TextAlign = ContentAlignment.MiddleCenter,
                 Location = new Point(2, 2)
             };
-            btnMenu.Click += (s, e) => sidebarTimer.Start();
+            btnMenu.Click += (s, e) => ToggleSidebarInstant();
             btnMenu.MouseEnter += (s, e) => btnMenu.BackColor = AppColorConfig.SidebarHover;
             btnMenu.MouseLeave += (s, e) => btnMenu.BackColor = Color.Transparent;
             headerPanel.Controls.Add(btnMenu);
@@ -240,38 +240,23 @@ namespace POS_Inventory.Form.AdminForm
                 mainContentPanel.Controls.Add(pageToLoad);
             }
         }
-        private void SidebarTimer_Tick(object sender, EventArgs e)
+        private void ToggleSidebarInstant()
         {
-            this.SuspendLayout();
-
             if (isCollapsed)
             {
-                sidePanel.Width += 10;
-
-                if (sidePanel.Width >= ExpandedWidth)
-                {
-                    sidebarTimer.Stop();
-                    isCollapsed = false;
-                    RefreshButtonAppearance();
-                }
+                sidePanel.Width = ExpandedWidth;
+                isCollapsed = false;
             }
             else
             {
-                sidePanel.Width -= 10;
-
-                if (sidePanel.Width <= CollapsedWidth)
-                {
-                    sidebarTimer.Stop();
-                    isCollapsed = true;
-                    RefreshButtonAppearance();
-                }
+                sidePanel.Width = CollapsedWidth;
+                isCollapsed = true;
             }
+            RefreshButtonAppearance();
             mainContentPanel.Location = new Point(sidePanel.Width, headerPanel.Height);
-            mainContentPanel.Size = new Size(this.ClientSize.Width - sidePanel.Width, this.ClientSize.Height - headerPanel.Height);
-
-
-            this.ResumeLayout(true);
+            mainContentPanel.Width = this.ClientSize.Width - sidePanel.Width;
         }
+
         private void RefreshButtonAppearance()
         {
             if (lblAdminTitle != null)
