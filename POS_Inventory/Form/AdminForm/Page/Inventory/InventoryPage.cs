@@ -203,7 +203,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
             {
                  string filterText = txtSearch.Text.Trim().Replace("'", "''");
 
-                 if (filterText != "Search by id, name, category..." && !string.IsNullOrWhiteSpace(filterText))
+                 if (filterText != "Search by id, name, category" && !string.IsNullOrWhiteSpace(filterText))
                 {
                      dt.CaseSensitive = false;
 
@@ -226,10 +226,16 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
 
             if (dgvInventory.Columns[e.ColumnIndex].Name == "Edit")
             {
-                // This triggers the same Edit form as ProductPage
-                // Note: You may need to ensure ProductForm is accessible from this namespace
-                // using (ProductForm form = new ProductForm(productConfig, id)) 
-                // { if (form.ShowDialog() == DialogResult.OK) LoadInventoryData(); }
+                // Pass the productConfig and the ID of the selected row
+                using (InventoryEditForm editForm = new InventoryEditForm(productConfig, id))
+                {
+                    if (editForm.ShowDialog() == DialogResult.OK)
+                    {
+                        // If the user saved, reload the table to show updated data
+                        LoadInventoryData();
+                        MessageBox.Show("Product updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
             }
             else if (dgvInventory.Columns[e.ColumnIndex].Name == "Delete")
             {

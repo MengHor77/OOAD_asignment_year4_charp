@@ -138,6 +138,12 @@
     <Compile Include="Form\AdminForm\Page\Dashboard\DashboardPage.Designer.cs">
       <DependentUpon>DashboardPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form\AdminForm\Page\Inventory\InventoryEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Inventory\InventoryEditForm.Designer.cs">
+      <DependentUpon>InventoryEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form\AdminForm\Page\Inventory\InventoryPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
