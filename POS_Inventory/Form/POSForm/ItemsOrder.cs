@@ -16,7 +16,7 @@ namespace POS_Inventory.Form.POSForm
 
         private void SetupOrderRowDesign()
         {
-            this.Size = new Size(250, 45);
+            this.Size = new Size(310, 45);
             this.BackColor = Color.FromArgb(170, 160, 230);
             this.Margin = new Padding(0, 5, 0, 5);
 
