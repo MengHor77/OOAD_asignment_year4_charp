@@ -13,7 +13,7 @@ namespace POS_Inventory.Form.POSForm
         private Label lblLogo, lblSystemName, lblCashierName, lblLogout, lblOrderTitle, lblTotal;
         private FlowLayoutPanel flowProductGrid, flowItemsOrder;
         private Button btnSubmit;
-
+        private DataTable productTable;
         private ProductConfig _productRepo = new ProductConfig();
 
         public LayoutPos()
@@ -26,7 +26,7 @@ namespace POS_Inventory.Form.POSForm
         private void LayoutDesign()
         {
             this.Text = "POS System";
-            this.Size = new Size(1340, 750);//1100, 750 cashier1
+            this.Size = new Size(1340, 750); 
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = AppColorConfig.White;
 
@@ -67,7 +67,10 @@ namespace POS_Inventory.Form.POSForm
                 BorderStyle = BorderStyle.None,
                 BackColor = Color.FromArgb(240, 240, 240),
                 Size = new Size(300, 30),
-                Location = new Point(35, 10) };
+                Location = new Point(35, 10)
+            };
+            txtSearch.TextChanged += TxtSearch_TextChanged;
+
             pnlSearchContainer.Controls.Add(txtSearch);
 
             lblCashierName = new Label { 
@@ -174,12 +177,12 @@ namespace POS_Inventory.Form.POSForm
 
         private void LoadProductsFromDatabase()
         {
-            DataTable dt = _productRepo.GetAllProducts();
+            productTable = _productRepo.GetAllProducts();   // store products
             flowProductGrid.Controls.Clear();
 
-            if (dt != null)
+            if (productTable != null)
             {
-                foreach (DataRow row in dt.Rows)
+                foreach (DataRow row in productTable.Rows)
                 {
                     CardProductPOS card = new CardProductPOS();
                     card.ProductID = Convert.ToInt32(row["id"]);
@@ -190,10 +193,32 @@ namespace POS_Inventory.Form.POSForm
                     card.Stock = Convert.ToInt32(row["stock_qty"]);
 
                     card.Click += (s, e) => AddProductToOrder(card.ProductName, card.Price);
+
                     flowProductGrid.Controls.Add(card);
                 }
             }
         }
+
+        private void DisplayProducts(DataTable dt)
+        {
+            flowProductGrid.Controls.Clear();
+
+            foreach (DataRow row in dt.Rows)
+            {
+                CardProductPOS card = new CardProductPOS();
+                card.ProductID = Convert.ToInt32(row["id"]);
+                card.ProductName = row["product_name"].ToString();
+                card.CategoryName = row["category_name"].ToString();
+                card.Price = Convert.ToDecimal(row["price"]);
+                card.ProductPrice = row["price"].ToString();
+                card.Stock = Convert.ToInt32(row["stock_qty"]);
+
+                card.Click += (s, e) => AddProductToOrder(card.ProductName, card.Price);
+
+                flowProductGrid.Controls.Add(card);
+            }
+        }
+
 
         private void AddProductToOrder(string name, decimal price)
         {
@@ -222,6 +247,36 @@ namespace POS_Inventory.Form.POSForm
                 // 4. Close the current form to free up memory
                 this.Close();
             }
+
+
         }
+        private void TxtSearch_TextChanged(object sender, EventArgs e)
+        {
+            if (productTable == null) return;
+
+            string search = txtSearch.Text.Trim().ToLower();
+
+            if (string.IsNullOrWhiteSpace(search) || search == "search by name..")
+            {
+                DisplayProducts(productTable);
+                return;
+            }
+
+            DataRow[] filteredRows = productTable.Select(
+                $"Convert(id,'System.String') LIKE '%{search}%' OR " +
+                $"product_name LIKE '%{search}%' OR " +
+                $"category_name LIKE '%{search}%'"
+            );
+
+            DataTable filteredTable = productTable.Clone();
+
+            foreach (DataRow row in filteredRows)
+            {
+                filteredTable.ImportRow(row);
+            }
+
+            DisplayProducts(filteredTable);
+        }
+
     }
 }
