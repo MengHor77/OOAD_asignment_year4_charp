@@ -108,9 +108,9 @@ namespace POS_Inventory.Form.POSForm
             // --- 4. Order Sidebar (Right) ---
             pnlOrderSidebar = new Panel {
                 Dock = DockStyle.Right,
-                Width = 356,
+                Width = 348,
                 BackColor = AppColorConfig.CardProduct,
-                Padding = new Padding(20, 10, 20, 20) //left, top , right , buttom 
+                Padding = new Padding(10, 10, 10, 20) //left, top , right , buttom 
             };
 
             lblOrderTitle = new Label { 
