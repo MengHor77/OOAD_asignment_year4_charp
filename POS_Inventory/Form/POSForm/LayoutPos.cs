@@ -1,14 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -26,18 +16,17 @@ namespace POS_Inventory.Form.POSForm
         private Label lblSystemName;
         private Label lblCashierName;
         private Label lblLogout;
-        private PictureBox picSearchIcon;
 
         public LayoutPos()
         {
             InitializeComponent();
-            ApplyCustomDesign();
+            LayoutDesign();
         }
 
-        private void ApplyCustomDesign()
+        private void LayoutDesign()
         {
             // --- Form Basic Setup ---
-            this.Text = "LayoutPos"; // Matches image_11cfbe.png
+            this.Text = "LayoutPos";
             this.Size = new Size(1000, 650);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.White;
@@ -46,7 +35,7 @@ namespace POS_Inventory.Form.POSForm
             pnlTopNav = new Panel();
             pnlTopNav.Dock = DockStyle.Top;
             pnlTopNav.Height = 70;
-            pnlTopNav.BackColor = Color.FromArgb(147, 131, 206); // Purple shade from image_12a9b7.png
+            pnlTopNav.BackColor = Color.FromArgb(147, 131, 206);
             this.Controls.Add(pnlTopNav);
 
             // Logo Label
@@ -67,19 +56,18 @@ namespace POS_Inventory.Form.POSForm
             lblSystemName.AutoSize = true;
             pnlTopNav.Controls.Add(lblSystemName);
 
-            // Search Container (Greyish bar)
+            // Search Container
             pnlSearchContainer = new Panel();
             pnlSearchContainer.Size = new Size(350, 40);
             pnlSearchContainer.Location = new Point(260, 15);
-            pnlSearchContainer.BackColor = Color.FromArgb(211, 211, 211); // Grey from image_12a9b7.png
+            pnlSearchContainer.BackColor = Color.FromArgb(211, 211, 211);
             pnlTopNav.Controls.Add(pnlSearchContainer);
 
-            // Search Icon Placeholder (using a Label for simplicity)
+            // Search Icon
             Label lblSearchIcon = new Label();
-            lblSearchIcon.Text = "🔍"; // Search icon
+            lblSearchIcon.Text = "🔍";
             lblSearchIcon.Font = new Font("Segoe UI", 12);
             lblSearchIcon.Location = new Point(5, 8);
-            lblSearchIcon.Size = new Size(25, 25);
             pnlSearchContainer.Controls.Add(lblSearchIcon);
 
             // Search TextBox
@@ -88,7 +76,6 @@ namespace POS_Inventory.Form.POSForm
             txtSearch.BorderStyle = BorderStyle.None;
             txtSearch.BackColor = Color.FromArgb(211, 211, 211);
             txtSearch.Font = new Font("Segoe UI", 11);
-            txtSearch.ForeColor = Color.DimGray;
             txtSearch.Size = new Size(300, 30);
             txtSearch.Location = new Point(35, 10);
             pnlSearchContainer.Controls.Add(txtSearch);
@@ -107,10 +94,10 @@ namespace POS_Inventory.Form.POSForm
             pnlSideNav = new Panel();
             pnlSideNav.Dock = DockStyle.Left;
             pnlSideNav.Width = 70;
-            pnlSideNav.BackColor = Color.FromArgb(147, 131, 206); // Same purple
+            pnlSideNav.BackColor = Color.FromArgb(147, 131, 206);
             this.Controls.Add(pnlSideNav);
 
-            // Logout Label (Placed at the bottom)
+            // Logout Label
             lblLogout = new Label();
             lblLogout.Text = "logout";
             lblLogout.ForeColor = Color.White;
@@ -119,17 +106,33 @@ namespace POS_Inventory.Form.POSForm
             lblLogout.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             lblLogout.Cursor = Cursors.Hand;
             lblLogout.AutoSize = true;
-            lblLogout.Click += (s, e) => {
-                // Logic for logout, e.g., show login form
-                this.Close();
-            };
+
+            // --- Standard Event Registration ---
+            lblLogout.Click += new EventHandler(lblLogout_Click);
+
             pnlSideNav.Controls.Add(lblLogout);
 
             // --- 3. Main Content Panel (Light Blue) ---
             pnlMainContent = new Panel();
             pnlMainContent.Dock = DockStyle.Fill;
-            pnlMainContent.BackColor = Color.FromArgb(119, 158, 254); // Light Blue from image_12a9b7.png
+            pnlMainContent.BackColor = Color.FromArgb(119, 158, 254);
             this.Controls.Add(pnlMainContent);
+        }
+
+        // --- Standard Logout Method Signature ---
+        private void lblLogout_Click(object sender, EventArgs e)
+        {
+            PerformLogout();
+        }
+
+        private void PerformLogout()
+        {
+            if (MessageBox.Show("Are you sure you want to logout?", "Logout", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                FormLogin loginForm = new FormLogin();
+                loginForm.Show();
+                this.Close();
+            }
         }
     }
 }
