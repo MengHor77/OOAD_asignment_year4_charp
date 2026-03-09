@@ -2,174 +2,158 @@
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using POS_Inventory.Config; // Assuming this contains your AppColorConfix
+using POS_Inventory.Config;
 
 namespace POS_Inventory.Form.AdminForm.Page.Product
 {
     public partial class ProductPage : UserControl
     {
         private DataGridView dgvProduct;
-        private TextBox txtProductName, txtPrice, txtStock;
-        private ComboBox cmbCategory;
-        private Button btnAdd, btnUpdate, btnDelete, btnClear;
-        private int selectedId = -1;
+        private Button btnAdd;
+        private ProductConfig productConfig;
+        private Panel pnlTableContainer;
 
         public ProductPage()
         {
-            InitializeComponent();
+            productConfig = new ProductConfig();
             SetupLayout();
-            LoadCategories(); // Load categories for the dropdown
-            LoadData();       // Load product list
+            LoadData();
         }
 
         private void SetupLayout()
         {
             this.Dock = DockStyle.Fill;
             this.BackColor = AppColorConfig.ContentBackground;
-            // --- 1. TOP INPUT PANEL ---
-            Panel pnlInputs = new Panel { Dock = DockStyle.Top, Height = 180, BackColor = Color.FromArgb(240, 240, 240), Padding = new Padding(10) };
+            this.Padding = new Padding(20);
 
             Label lblTitle = new Label
             {
-                Text = "Product Management",
-                Font = new Font("Segoe UI", 14, FontStyle.Bold),
-                Location = new Point(20, 10),
-                AutoSize = false,               // important
-                Size = new Size(300, 100),       // width and height large enough for text + padding
-                Padding = new Padding(0, 0, 0, 40) // left, top, right, bottom
+                Text = "Product Inventory",
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                ForeColor = AppColorConfig.TextDark,
+                Location = new Point(20, 20),
+                AutoSize = true
             };
 
-
-
-            // Input Fields
-            AddLabelAndControl(pnlInputs, "Product Name:", txtProductName = new TextBox { Width = 200 }, 20, 50);
-            AddLabelAndControl(pnlInputs, "Category:", cmbCategory = new ComboBox { Width = 200, DropDownStyle = ComboBoxStyle.DropDownList }, 240, 50);
-            AddLabelAndControl(pnlInputs, "Price:", txtPrice = new TextBox { Width = 100 }, 20, 100);
-            AddLabelAndControl(pnlInputs, "Stock:", txtStock = new TextBox { Width = 100 }, 140, 100);
-
-            // Buttons
-            btnAdd = CreateBtn("Add", Color.SeaGreen, 300, 115);
-            btnUpdate = CreateBtn("Update", Color.Orange, 410, 115);
-            btnDelete = CreateBtn("Delete", Color.Crimson, 520, 115);
-            btnClear = CreateBtn("Clear", Color.Gray, 630, 115);
-
+            btnAdd = new Button
+            {
+                Text = "+ Add New Product",
+                BackColor = AppColorConfig.BrandBlue,
+                ForeColor = AppColorConfig.TextDark,
+                FlatStyle = FlatStyle.Flat,
+                Size = new Size(160, 40),
+                Location = new Point(20, 70),
+                Cursor = Cursors.Hand,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold)
+            };
+            btnAdd.FlatAppearance.BorderSize = 0;
             btnAdd.Click += BtnAdd_Click;
-            btnUpdate.Click += BtnUpdate_Click;
-            btnDelete.Click += BtnDelete_Click;
-            btnClear.Click += (s, e) => ClearForm();
 
-            pnlInputs.Controls.AddRange(new Control[] { lblTitle, btnAdd, btnUpdate, btnDelete, btnClear });
-            this.Controls.Add(pnlInputs);
+            pnlTableContainer = new Panel
+            {
+                Location = new Point(20, 130),
+                Size = new Size(this.Width - 40, 450),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
+                BackColor = AppColorConfig.White
+            };
 
-            // --- 2. GRID VIEW ---
             dgvProduct = new DataGridView
             {
                 Dock = DockStyle.Fill,
-                BackgroundColor = Color.White,
+                BackgroundColor = AppColorConfig.White,
+                BorderStyle = BorderStyle.None,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
                 SelectionMode = DataGridViewSelectionMode.FullRowSelect,
                 AllowUserToAddRows = false,
+                RowHeadersVisible = false,
                 ReadOnly = true,
-                RowHeadersVisible = false
+                GridColor = Color.FromArgb(240, 240, 240),
+                RowTemplate = { Height = 40 },
+                ColumnHeadersHeight = 45,
+                EnableHeadersVisualStyles = false
             };
-            dgvProduct.CellClick += DgvProduct_CellClick;
-            this.Controls.Add(dgvProduct);
-            dgvProduct.BringToFront();
-        }
 
-        private void AddLabelAndControl(Panel p, string labelText, Control ctrl, int x, int y)
-        {
-            Label lbl = new Label { Text = labelText, Location = new Point(x, y), AutoSize = true, Font = new Font("Segoe UI", 9) };
-            ctrl.Location = new Point(x, y + 20);
-            p.Controls.Add(lbl);
-            p.Controls.Add(ctrl);
-        }
-
-        private Button CreateBtn(string text, Color color, int x, int y)
-        {
-            Button btn = new Button
+            dgvProduct.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
-                Text = text,
-                Size = new Size(100, 35),
-                Location = new Point(x, y),
-                BackColor = color,
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 9, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                BackColor = AppColorConfig.CardProduct,
+                ForeColor = AppColorConfig.TextLight,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Alignment = DataGridViewContentAlignment.MiddleCenter
             };
-            btn.FlatAppearance.BorderSize = 0;
-            return btn;
-        }
 
-        // --- DATA LOGIC ---
+            dgvProduct.CellContentClick += DgvProduct_CellContentClick;
 
-        private void LoadCategories()
-        {
-            // Dummy Data - Replace with: SELECT id, category_name FROM categories
-            cmbCategory.Items.Clear();
-            cmbCategory.Items.Add("Food");
-            cmbCategory.Items.Add("Drinks");
-            cmbCategory.SelectedIndex = 0;
+            pnlTableContainer.Controls.Add(dgvProduct);
+            this.Controls.Add(pnlTableContainer);
+            this.Controls.Add(btnAdd);
+            this.Controls.Add(lblTitle);
         }
 
         private void LoadData()
         {
-            // Dummy Data - Replace with: SELECT p.id, p.name, c.name as Category, p.price, p.stock FROM products...
-            DataTable dt = new DataTable();
-            dt.Columns.Add("ID");
-            dt.Columns.Add("Product Name");
-            dt.Columns.Add("Category");
-            dt.Columns.Add("Price");
-            dt.Columns.Add("Stock");
-            dt.Rows.Add(1, "Coca Cola", "Drinks", "1.50", "50");
+            DataTable dt = productConfig.GetAllProducts();
             dgvProduct.DataSource = dt;
+
+            if (dgvProduct.Columns.Contains("Edit")) dgvProduct.Columns.Remove("Edit");
+            if (dgvProduct.Columns.Contains("Delete")) dgvProduct.Columns.Remove("Delete");
+
+            // Add Action Buttons with Theme Colors
+            DataGridViewButtonColumn btnEdit = new DataGridViewButtonColumn
+            {
+                Name = "Edit",
+                Text = "Edit",
+                UseColumnTextForButtonValue = true,
+                FlatStyle = FlatStyle.Flat,
+                Width = 60
+            };
+            btnEdit.DefaultCellStyle.BackColor = AppColorConfig.CardStaff;
+            btnEdit.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
+            dgvProduct.Columns.Add(btnEdit);
+
+            DataGridViewButtonColumn btnDelete = new DataGridViewButtonColumn
+            {
+                Name = "Delete",
+                Text = "Delete",
+                UseColumnTextForButtonValue = true,
+                FlatStyle = FlatStyle.Flat,
+                Width = 60
+            };
+            btnDelete.DefaultCellStyle.BackColor = AppColorConfig.HeaderPink;
+            btnDelete.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
+            dgvProduct.Columns.Add(btnDelete);
+
+            if (dgvProduct.Columns.Contains("id")) dgvProduct.Columns["id"].HeaderText = "ID";
+            if (dgvProduct.Columns.Contains("product_name")) dgvProduct.Columns["product_name"].HeaderText = "Product Name";
+            if (dgvProduct.Columns.Contains("stock_qty")) dgvProduct.Columns["stock_qty"].HeaderText = "Stock";
         }
 
-        private void DgvProduct_CellClick(object sender, DataGridViewCellEventArgs e)
+        private void DgvProduct_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0)
+            if (e.RowIndex < 0) return;
+            int id = Convert.ToInt32(dgvProduct.Rows[e.RowIndex].Cells["id"].Value);
+
+            if (dgvProduct.Columns[e.ColumnIndex].Name == "Edit")
             {
-                DataGridViewRow row = dgvProduct.Rows[e.RowIndex];
-                selectedId = Convert.ToInt32(row.Cells["ID"].Value);
-                txtProductName.Text = row.Cells["Product Name"].Value.ToString();
-                cmbCategory.SelectedItem = row.Cells["Category"].Value.ToString();
-                txtPrice.Text = row.Cells["Price"].Value.ToString();
-                txtStock.Text = row.Cells["Stock"].Value.ToString();
+                using (ProductForm form = new ProductForm(productConfig, id))
+                {
+                    if (form.ShowDialog() == DialogResult.OK) LoadData();
+                }
+            }
+            else if (dgvProduct.Columns[e.ColumnIndex].Name == "Delete")
+            {
+                if (MessageBox.Show("Delete this product?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    if (productConfig.DeleteProduct(id)) LoadData();
+                }
             }
         }
 
         private void BtnAdd_Click(object sender, EventArgs e)
         {
-            // Logic: Validate inputs -> Execute INSERT SQL -> LoadData()
-            MessageBox.Show($"Product '{txtProductName.Text}' Added!");
-            LoadData();
-        }
-
-        private void BtnUpdate_Click(object sender, EventArgs e)
-        {
-            if (selectedId == -1) return;
-            MessageBox.Show("Product Updated!");
-            LoadData();
-        }
-
-        private void BtnDelete_Click(object sender, EventArgs e)
-        {
-            if (selectedId == -1) return;
-            if (MessageBox.Show("Delete this product?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            using (ProductForm form = new ProductForm(productConfig))
             {
-                LoadData();
-                ClearForm();
+                if (form.ShowDialog() == DialogResult.OK) LoadData();
             }
-        }
-
-        private void ClearForm()
-        {
-            txtProductName.Clear();
-            txtPrice.Clear();
-            txtStock.Clear();
-            cmbCategory.SelectedIndex = 0;
-            selectedId = -1;
         }
     }
 }

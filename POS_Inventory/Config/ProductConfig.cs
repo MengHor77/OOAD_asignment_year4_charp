@@ -4,7 +4,7 @@ using MySql.Data.MySqlClient;
 
 namespace POS_Inventory.Config
 {
-    internal class ProductConfig
+    public class ProductConfig
     {
         private readonly string connectionString = "server=localhost;port=3306;username=root;password=;database=pos_db;SslMode=none;ConnectionTimeout=30;";
 
