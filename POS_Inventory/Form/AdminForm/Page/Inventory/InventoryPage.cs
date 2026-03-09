@@ -201,19 +201,24 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
         {
             if (dgvInventory.DataSource is DataTable dt)
             {
-                string filter = txtSearch.Text;
-                if (filter != "Search by id, name, category" && !string.IsNullOrWhiteSpace(filter))
+                 string filterText = txtSearch.Text.Trim().Replace("'", "''");
+
+                 if (filterText != "Search by id, name, category..." && !string.IsNullOrWhiteSpace(filterText))
                 {
-                    // Filters by Product Name or Category Name
-                    dt.DefaultView.RowFilter = string.Format("product_name LIKE '%{0}%' OR category_name LIKE '%{0}%'", filter);
+                     dt.CaseSensitive = false;
+
+                     dt.DefaultView.RowFilter = string.Format(
+                        "CONVERT(id, 'System.String') LIKE '%{0}%' OR " +
+                        "product_name LIKE '%{0}%' OR " +
+                        "category_name LIKE '%{0}%'",
+                        filterText);
                 }
                 else
                 {
-                    dt.DefaultView.RowFilter = "";
+                     dt.DefaultView.RowFilter = "";
                 }
             }
         }
-
         private void DgvInventory_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
