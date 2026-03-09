@@ -162,11 +162,17 @@
     <Compile Include="Form\AdminForm\Page\Product\ProductPage.Designer.cs">
       <DependentUpon>ProductPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form\AdminForm\Page\Product\Report\ReportPage.cs">
+    <Compile Include="Form\AdminForm\Page\Report\ReportPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Form\AdminForm\Page\Product\Report\ReportPage.Designer.cs">
+    <Compile Include="Form\AdminForm\Page\Report\ReportPage.Designer.cs">
       <DependentUpon>ReportPage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Staff\StaffEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\AdminForm\Page\Staff\StaffEditForm.Designer.cs">
+      <DependentUpon>StaffEditForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Form\AdminForm\Page\Staff\StaffPage.cs">
       <SubType>UserControl</SubType>

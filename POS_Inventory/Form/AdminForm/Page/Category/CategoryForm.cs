@@ -17,8 +17,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
         {
             categoryConfig = config;
             categoryId = id;
-            // InitializeComponent(); // Only keep this if you have a Designer.cs file
-            SetupLayout();
+             SetupLayout();
 
             if (categoryId != -1)
                 LoadCategory();
@@ -26,7 +25,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
 
         private void SetupLayout()
         {
-            // Increased height to 380 to fit the larger buttons properly
+            
             this.Size = new Size(400, 380);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterParent;
