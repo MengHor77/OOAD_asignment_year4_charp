@@ -187,6 +187,18 @@
       <DependentUpon>StaffPage.cs</DependentUpon>
     </Compile>
     <Compile Include="Form\AdminForm\SidebarItem.cs" />
+    <Compile Include="Form\POSForm\CardProductPOS.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Form\POSForm\CardProductPOS.Designer.cs">
+      <DependentUpon>CardProductPOS.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form\POSForm\ItemsOrder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Form\POSForm\ItemsOrder.Designer.cs">
+      <DependentUpon>ItemsOrder.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form\POSForm\LayoutPos.cs">
       <SubType>Form</SubType>
     </Compile>

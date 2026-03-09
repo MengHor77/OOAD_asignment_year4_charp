@@ -95,7 +95,7 @@ namespace POS_Inventory.Config
                                 p.stock_qty,
                                 p.category_id
                              FROM products p
-                             INNER JOIN categories c ON p.category_id = c.id
+                             LEFT JOIN categories c ON p.category_id = c.id
                              ORDER BY p.id DESC";
 
                     MySqlDataAdapter sda = new MySqlDataAdapter(query, conn);
