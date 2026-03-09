@@ -26,7 +26,7 @@ namespace POS_Inventory.Form.POSForm
             // UserControl properties
             this.Size = new Size(298, 45);
             this.BackColor = Color.FromArgb(170, 160, 230);
-            this.Margin = new Padding(0, 5, 0, 5);
+            this.Margin = new Padding(0, 8, 0, 8);
 
             // Delete icon
             picDelete = new PictureBox

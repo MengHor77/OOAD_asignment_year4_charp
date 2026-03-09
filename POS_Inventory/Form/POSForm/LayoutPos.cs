@@ -26,7 +26,7 @@ namespace POS_Inventory.Form.POSForm
         private void LayoutDesign()
         {
             this.Text = "POS System";
-            this.Size = new Size(1100, 750);//1100, 750
+            this.Size = new Size(1340, 750);//1100, 750 cashier1
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = AppColorConfig.White;
 
