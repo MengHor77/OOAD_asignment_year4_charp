@@ -114,6 +114,12 @@
     <Compile Include="FormLogin.Designer.cs">
       <DependentUpon>FormLogin.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormSingUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSingUp.Designer.cs">
+      <DependentUpon>FormSingUp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form\AdminForm\AdminLayout.cs">
       <SubType>Form</SubType>
     </Compile>
