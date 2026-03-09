@@ -187,6 +187,12 @@
       <DependentUpon>StaffPage.cs</DependentUpon>
     </Compile>
     <Compile Include="Form\AdminForm\SidebarItem.cs" />
+    <Compile Include="Form\POSForm\LayoutPos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form\POSForm\LayoutPos.Designer.cs">
+      <DependentUpon>LayoutPos.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\AdminForm\AdminLayout.resx">
@@ -222,7 +228,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Form\POSForm\" />
     <Folder Include="Model\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

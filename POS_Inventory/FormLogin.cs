@@ -5,8 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using POS_Inventory.Config;
 using POS_Inventory.Form.AdminForm;
-// Add your Cashier namespace here if different, e.g.:
-// using POS_Inventory.Form.CashierForm; 
+ using POS_Inventory.Form.POSForm; 
 
 namespace POS_Inventory
 {
@@ -214,14 +213,10 @@ namespace POS_Inventory
                         }
                         else if (dbRole == "Cashier")
                         {
-                            // --- FIXED: OPEN CASHIER WINDOW HERE ---
-                            // If you haven't created CashierLayout yet, use this placeholder:
-                            MessageBox.Show("Cashier Login Successful!", "Welcome");
-
-                            // Once you create your Cashier Form, uncomment below:
-                            // CashierLayout cashierForm = new CashierLayout();
-                            // cashierForm.Show();
-                            // this.Hide();
+                            
+                             LayoutPos cashierForm = new LayoutPos();
+                            cashierForm.Show();
+                            this.Hide();
                         }
                     }
                     else
