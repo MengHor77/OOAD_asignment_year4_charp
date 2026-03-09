@@ -86,9 +86,17 @@ namespace POS_Inventory.Config
                 {
                     conn.Open();
 
-                    string query = @"SELECT id, product_name, category_id, price, stock_qty, created_by_user_id, created_at
-                                     FROM products
-                                     ORDER BY id DESC";
+                    // We JOIN products (p) with categories (c) to get the name instead of just the ID
+                    string query = @"SELECT 
+                                p.id, 
+                                p.product_name, 
+                                c.category_name, 
+                                p.price, 
+                                p.stock_qty,
+                                p.category_id
+                             FROM products p
+                             INNER JOIN categories c ON p.category_id = c.id
+                             ORDER BY p.id DESC";
 
                     MySqlDataAdapter sda = new MySqlDataAdapter(query, conn);
                     sda.Fill(dt);

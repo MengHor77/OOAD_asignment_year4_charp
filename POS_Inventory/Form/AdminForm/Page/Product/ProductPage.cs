@@ -12,6 +12,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
         private Button btnAdd;
         private ProductConfig productConfig;
         private Panel pnlTableContainer;
+        private Panel pnlPagination;
 
         public ProductPage()
         {
@@ -26,37 +27,40 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             this.BackColor = AppColorConfig.ContentBackground;
             this.Padding = new Padding(20);
 
+            // --- Header Label ---
             Label lblTitle = new Label
             {
                 Text = "Product Inventory",
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                Font = new Font("Segoe UI", 16, FontStyle.Regular),
                 ForeColor = AppColorConfig.TextDark,
                 Location = new Point(20, 20),
                 AutoSize = true
             };
 
+            // --- Add Button ---
             btnAdd = new Button
             {
-                Text = "+ Add New Product",
+                Text = "Add new product",
                 BackColor = AppColorConfig.BrandBlue,
-                ForeColor = AppColorConfig.TextDark,
+                ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
-                Size = new Size(160, 40),
+                Size = new Size(150, 40),
                 Location = new Point(20, 70),
-                Cursor = Cursors.Hand,
-                Font = new Font("Segoe UI", 9, FontStyle.Bold)
+                Cursor = Cursors.Hand
             };
             btnAdd.FlatAppearance.BorderSize = 0;
             btnAdd.Click += BtnAdd_Click;
 
+            // --- Table Container ---
             pnlTableContainer = new Panel
             {
                 Location = new Point(20, 130),
-                Size = new Size(this.Width - 40, 450),
-                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
-                BackColor = AppColorConfig.White
+                Size = new Size(this.Width - 40, 400),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                BackColor = Color.Transparent
             };
 
+            // --- DataGridView Styling ---
             dgvProduct = new DataGridView
             {
                 Dock = DockStyle.Fill,
@@ -67,7 +71,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
                 AllowUserToAddRows = false,
                 RowHeadersVisible = false,
                 ReadOnly = true,
-                GridColor = Color.FromArgb(240, 240, 240),
+                GridColor = Color.FromArgb(174, 214, 241),
                 RowTemplate = { Height = 40 },
                 ColumnHeadersHeight = 45,
                 EnableHeadersVisualStyles = false
@@ -76,17 +80,59 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             dgvProduct.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = AppColorConfig.CardProduct,
-                ForeColor = AppColorConfig.TextLight,
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                ForeColor = Color.Black,
+                Font = new Font("Segoe UI", 11, FontStyle.Regular),
                 Alignment = DataGridViewContentAlignment.MiddleCenter
+            };
+
+            dgvProduct.DefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = AppColorConfig.White,
+                ForeColor = AppColorConfig.TextDark,
+                SelectionBackColor = Color.FromArgb(230, 240, 255),
+                SelectionForeColor = Color.Black,
+                Alignment = DataGridViewContentAlignment.MiddleCenter,
+                Padding = new Padding(5)
             };
 
             dgvProduct.CellContentClick += DgvProduct_CellContentClick;
 
+            // --- Pagination Placeholder ---
+            pnlPagination = new Panel
+            {
+                Size = new Size(210, 50),
+                BackColor = AppColorConfig.White,
+                Location = new Point(pnlTableContainer.Right - 200, pnlTableContainer.Bottom + 10),
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
+            };
+            AddPaginationButtons();
+
+            this.Controls.Add(pnlPagination);
             pnlTableContainer.Controls.Add(dgvProduct);
             this.Controls.Add(pnlTableContainer);
             this.Controls.Add(btnAdd);
             this.Controls.Add(lblTitle);
+        }
+
+        private void AddPaginationButtons()
+        {
+            string[] buttons = { "<", "1", "2", "3", ">" };
+            int x = 5;
+            foreach (var b in buttons)
+            {
+                Button btn = new Button
+                {
+                    Text = b,
+                    Size = new Size(35, 35),
+                    Location = new Point(x, 7),
+                    FlatStyle = FlatStyle.Flat,
+                    BackColor = (b == "2") ? Color.Orange : AppColorConfig.White,
+                    Font = new Font("Segoe UI", 9, FontStyle.Bold)
+                };
+                btn.FlatAppearance.BorderColor = Color.LightGray;
+                pnlPagination.Controls.Add(btn);
+                x += 40;
+            }
         }
 
         private void LoadData()
@@ -94,13 +140,18 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             DataTable dt = productConfig.GetAllProducts();
             dgvProduct.DataSource = dt;
 
+            // Remove existing Action columns to avoid duplication
             if (dgvProduct.Columns.Contains("Edit")) dgvProduct.Columns.Remove("Edit");
             if (dgvProduct.Columns.Contains("Delete")) dgvProduct.Columns.Remove("Delete");
 
-            // Add Action Buttons with Theme Colors
+            // Hide the ID columns we don't want the user to see
+            if (dgvProduct.Columns.Contains("category_id")) dgvProduct.Columns["category_id"].Visible = false;
+
+            // Add Action Buttons
             DataGridViewButtonColumn btnEdit = new DataGridViewButtonColumn
             {
                 Name = "Edit",
+                HeaderText = "action",
                 Text = "Edit",
                 UseColumnTextForButtonValue = true,
                 FlatStyle = FlatStyle.Flat,
@@ -113,7 +164,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             DataGridViewButtonColumn btnDelete = new DataGridViewButtonColumn
             {
                 Name = "Delete",
-                Text = "Delete",
+                HeaderText = "action",
+                Text = "delete",
                 UseColumnTextForButtonValue = true,
                 FlatStyle = FlatStyle.Flat,
                 Width = 60
@@ -122,8 +174,11 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             btnDelete.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
             dgvProduct.Columns.Add(btnDelete);
 
-            if (dgvProduct.Columns.Contains("id")) dgvProduct.Columns["id"].HeaderText = "ID";
+            // Rename Headers for Display
+            if (dgvProduct.Columns.Contains("id")) dgvProduct.Columns["id"].HeaderText = "Id";
             if (dgvProduct.Columns.Contains("product_name")) dgvProduct.Columns["product_name"].HeaderText = "Product Name";
+            if (dgvProduct.Columns.Contains("category_name")) dgvProduct.Columns["category_name"].HeaderText = "Category";
+            if (dgvProduct.Columns.Contains("price")) dgvProduct.Columns["price"].HeaderText = "Price";
             if (dgvProduct.Columns.Contains("stock_qty")) dgvProduct.Columns["stock_qty"].HeaderText = "Stock";
         }
 
