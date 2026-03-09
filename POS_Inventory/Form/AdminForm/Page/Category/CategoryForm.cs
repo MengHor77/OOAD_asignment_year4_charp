@@ -17,7 +17,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
         {
             categoryConfig = config;
             categoryId = id;
-            InitializeComponent();
+            // InitializeComponent(); // Only keep this if you have a Designer.cs file
             SetupLayout();
 
             if (categoryId != -1)
@@ -26,25 +26,43 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
 
         private void SetupLayout()
         {
-            this.Size = new Size(400, 300);//400,250
+            // Increased height to 380 to fit the larger buttons properly
+            this.Size = new Size(400, 380);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterParent;
+            this.BackColor = AppColorConfig.White;
             this.Text = categoryId == -1 ? "Add Category" : "Edit Category";
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
 
-            Label lblName = new Label { Text = "Category Name", Location = new Point(20, 20), AutoSize = true };
-            txtName = new TextBox { Location = new Point(20, 45), Width = 340, Font = new Font("Segoe UI", 10) };
+            // --- Category Name ---
+            Label lblName = new Label { Text = "Category Name", Location = new Point(30, 20), AutoSize = true, Font = new Font("Segoe UI", 9), ForeColor = AppColorConfig.TextDark };
+            txtName = new TextBox { Location = new Point(30, 45), Width = 320, Font = new Font("Segoe UI", 10), BorderStyle = BorderStyle.FixedSingle };
 
-            Label lblDesc = new Label { Text = "Description", Location = new Point(20, 80), AutoSize = true };
-            txtDescription = new TextBox { Location = new Point(20, 105), Width = 340, Height = 60, Multiline = true, Font = new Font("Segoe UI", 10) };
+            // --- Description ---
+            Label lblDesc = new Label { Text = "Description", Location = new Point(30, 85), AutoSize = true, Font = new Font("Segoe UI", 9), ForeColor = AppColorConfig.TextDark };
+            txtDescription = new TextBox
+            {
+                Location = new Point(30, 110),
+                Width = 320,
+                Height = 100,
+                Multiline = true,
+                Font = new Font("Segoe UI", 10),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            // --- Buttons (Matching ProductForm Style) ---
+            int buttonY = 240;
 
             btnSave = new Button
             {
-                Text = "Save",
-                BackColor = Color.FromArgb(40, 167, 69),
-                ForeColor = Color.White,
+                Text = "Save Changes",
+                Size = new Size(155, 45),
+                Location = new Point(30, buttonY),
+                BackColor = AppColorConfig.BtnSave,
+                ForeColor = AppColorConfig.TextDark,
                 FlatStyle = FlatStyle.Flat,
-                Location = new Point(60, 180),
-                Size = new Size(100, 35),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
             btnSave.FlatAppearance.BorderSize = 0;
@@ -53,16 +71,18 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             btnCancel = new Button
             {
                 Text = "Cancel",
-                BackColor = Color.Gray,
-                ForeColor = Color.White,
+                Size = new Size(155, 45),
+                Location = new Point(195, buttonY), // Side-by-side with 10px gap
+                BackColor = AppColorConfig.BtnCancel,
+                ForeColor = AppColorConfig.TextDark,
                 FlatStyle = FlatStyle.Flat,
-                Location = new Point(220, 180),
-                Size = new Size(100, 35),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
             btnCancel.FlatAppearance.BorderSize = 0;
             btnCancel.Click += (s, e) => this.Close();
 
+            // Add all controls to form
             this.Controls.AddRange(new Control[] { lblName, txtName, lblDesc, txtDescription, btnSave, btnCancel });
         }
 
@@ -88,15 +108,23 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             }
 
             bool success = false;
-            if (categoryId == -1)
-                success = categoryConfig.CreateCategory(name, desc);
-            else
-                success = categoryConfig.UpdateCategory(categoryId, name, desc);
-
-            if (success)
+            try
             {
-                MessageBox.Show("Category saved successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close();
+                if (categoryId == -1)
+                    success = categoryConfig.CreateCategory(name, desc);
+                else
+                    success = categoryConfig.UpdateCategory(categoryId, name, desc);
+
+                if (success)
+                {
+                    // This tells the calling page that the save was successful
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error saving category: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

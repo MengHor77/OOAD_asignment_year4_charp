@@ -8,11 +8,11 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
 {
     public partial class ProductForm : System.Windows.Forms.Form
     {
-        private ProductConfig _productConfig;
-        private int _productId;
+        private readonly ProductConfig _productConfig;
+        private readonly int _productId;
         private TextBox txtName, txtPrice, txtStock;
         private ComboBox cmbCategory;
-        private Button btnSave;
+        private Button btnSave, btnCancel;
 
         public ProductForm(ProductConfig config, int id = -1)
         {
@@ -25,11 +25,13 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
 
         private void SetupForm()
         {
-            this.Size = new Size(400, 480);
+            this.Size = new Size(400, 450); // Increased height slightly for buttons
             this.Text = _productId == -1 ? "Add Product" : "Edit Product";
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterParent;
             this.BackColor = AppColorConfig.White;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
 
             int y = 30;
             CreateLabel("Product Name", 30, y);
@@ -37,7 +39,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
 
             y += 70;
             CreateLabel("Category", 30, y);
-            cmbCategory = new ComboBox { Location = new Point(30, y + 25), Width = 320, DropDownStyle = ComboBoxStyle.DropDownList };
+            cmbCategory = new ComboBox { Location = new Point(30, y + 25), Width = 320, DropDownStyle = ComboBoxStyle.DropDownList, Font = new Font("Segoe UI", 10) };
             this.Controls.Add(cmbCategory);
 
             y += 70;
@@ -49,12 +51,13 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             txtStock = CreateTextBox(30, y + 25);
 
             y += 80;
+            // --- Save Button ---
             btnSave = new Button
             {
                 Text = "Save Changes",
-                Size = new Size(320, 45),
+                Size = new Size(155, 45),
                 Location = new Point(30, y),
-                BackColor = AppColorConfig.BrandBlue,
+                BackColor = AppColorConfig.BtnSave,
                 ForeColor = AppColorConfig.TextDark,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
@@ -63,6 +66,22 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             btnSave.FlatAppearance.BorderSize = 0;
             btnSave.Click += BtnSave_Click;
             this.Controls.Add(btnSave);
+
+            // --- Cancel Button ---
+            btnCancel = new Button
+            {
+                Text = "Cancel",
+                Size = new Size(155, 45),
+                Location = new Point(195, y), 
+                BackColor = AppColorConfig.BtnCancel,
+                ForeColor = AppColorConfig.TextDark,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            btnCancel.FlatAppearance.BorderSize = 0;
+            btnCancel.Click += (s, e) => this.Close();
+            this.Controls.Add(btnCancel);
         }
 
         private void CreateLabel(string text, int x, int y)
@@ -109,17 +128,25 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             try
             {
                 if (string.IsNullOrWhiteSpace(txtName.Text)) throw new Exception("Name is required.");
-                decimal price = decimal.Parse(txtPrice.Text);
-                int stock = int.Parse(txtStock.Text);
+                if (!decimal.TryParse(txtPrice.Text, out decimal price)) throw new Exception("Invalid Price.");
+                if (!int.TryParse(txtStock.Text, out int stock)) throw new Exception("Invalid Stock.");
+
                 int catId = Convert.ToInt32(cmbCategory.SelectedValue);
 
                 bool result = (_productId == -1)
                     ? _productConfig.CreateProduct(txtName.Text, catId, price, stock, 1)
                     : _productConfig.UpdateProduct(_productId, txtName.Text, catId, price, stock);
 
-                if (result) { this.DialogResult = DialogResult.OK; this.Close(); }
+                if (result)
+                {
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
