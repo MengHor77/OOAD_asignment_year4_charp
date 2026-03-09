@@ -15,12 +15,16 @@ namespace POS_Inventory.Form.POSForm
         private Button btnSubmit;
         private DataTable productTable;
         private ProductConfig _productRepo = new ProductConfig();
-
+        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPWStr)] string lParam);
         public LayoutPos()
         {
             InitializeComponent();
             LayoutDesign();
             LoadProductsFromDatabase();
+            SetSearchPlaceholder();
+            this.ActiveControl = lblSystemName;
+
         }
 
         private void LayoutDesign()
@@ -62,19 +66,25 @@ namespace POS_Inventory.Form.POSForm
             };
             pnlTopNav.Controls.Add(pnlSearchContainer);
 
-            txtSearch = new TextBox { 
+            // Inside LayoutDesign, replace your txtSearch setup with this:
+            txtSearch = new TextBox
+            {
                 Text = "search by name..",
+                ForeColor = Color.Gray, // Set initial color here
                 BorderStyle = BorderStyle.None,
                 BackColor = Color.FromArgb(240, 240, 240),
                 Size = new Size(300, 30),
                 Location = new Point(35, 10)
             };
+
+            // Use ONLY these event assignments
+            txtSearch.Enter += TxtSearch_Enter;
+            txtSearch.Leave += TxtSearch_Leave;
             txtSearch.TextChanged += TxtSearch_TextChanged;
 
             pnlSearchContainer.Controls.Add(txtSearch);
 
             lblCashierName = new Label { 
-                Text = "Cashier Name",
                 ForeColor = AppColorConfig.TextLight,
                 Location = new Point(pnlTopNav.Width - 140, 25),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right,
@@ -174,6 +184,31 @@ namespace POS_Inventory.Form.POSForm
             pnlMainContent.Controls.Add(flowProductGrid);
             flowProductGrid.BringToFront();
         }
+        private void SetSearchPlaceholder()
+        {
+            // 0x1501 is the Windows message for EM_SETCUEBANNER
+            SendMessage(txtSearch.Handle, 0x1501, 0, "Search by name...");
+        }
+        private void TxtSearch_Enter(object sender, EventArgs e)
+        {
+            if (txtSearch.Text == "search by name..")
+            {
+                txtSearch.Text = "";
+                txtSearch.ForeColor = Color.Black;
+            }
+        }
+
+
+
+        private void TxtSearch_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                txtSearch.Text = "search by name..";
+                txtSearch.ForeColor = Color.Gray;
+            }
+        }
+
 
         private void LoadProductsFromDatabase()
         {
