@@ -171,6 +171,9 @@
     <EmbeddedResource Include="Form\AdminForm\Page\Dashboard\DashboardPage.resx">
       <DependentUpon>DashboardPage.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form\AdminForm\Page\Product\ProductPage.resx">
+      <DependentUpon>ProductPage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
