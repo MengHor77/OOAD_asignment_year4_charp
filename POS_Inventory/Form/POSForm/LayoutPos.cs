@@ -45,13 +45,15 @@ namespace POS_Inventory.Form.POSForm
             };
             this.Controls.Add(pnlTopNav);
 
-            lblLogo = new Label {
-                Text = "Logo",
-                ForeColor = AppColorConfig.TextLight,
-                Location = new Point(20, 25),
-                AutoSize = true
+            PictureBox picLogo = new PictureBox
+            {
+                Size = new Size(40, 40),
+                Location = new Point(20, 15),
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Image = Properties.Resources.logo
             };
-            pnlTopNav.Controls.Add(lblLogo);
+
+            pnlTopNav.Controls.Add(picLogo);
 
             lblSystemName = new Label {
                 Text = "Pos System",
