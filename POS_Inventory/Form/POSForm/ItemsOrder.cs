@@ -13,7 +13,7 @@ namespace POS_Inventory.Form.POSForm
         private Label lblQty;
         private Label btnMinus;
         private Label btnPlus;
-        private PictureBox picDelete;
+        private Label btnDelete;
         public event Action OnQuantityChanged;
         public event Action OnItemDeleted;
         private Label lblPricePerUnit;
@@ -90,15 +90,15 @@ namespace POS_Inventory.Form.POSForm
             {
                 Text = "+",
                 ForeColor = Color.White,
-                BackColor = Color.FromArgb(128, 224, 224), // cyan
+                BackColor = AppColorConfig.CardPOSProduct,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Size = new Size(circleSize, circleSize),
                 Cursor = Cursors.Hand,
                 Location = new Point(180, centerY - circleRadius)
             };
-            btnPlus.MouseEnter += (s, e) => btnPlus.BackColor = Color.FromArgb(64, 192, 192);
-            btnPlus.MouseLeave += (s, e) => btnPlus.BackColor = Color.FromArgb(128, 224, 224);
+            btnPlus.MouseEnter += (s, e) => btnPlus.BackColor = AppColorConfig.LightBlue;
+            btnPlus.MouseLeave += (s, e) => btnPlus.BackColor = AppColorConfig.CardPOSProduct;
             btnPlus.Click += (s, e) =>
             {
                 int qty = int.Parse(lblQty.Text);
@@ -126,15 +126,15 @@ namespace POS_Inventory.Form.POSForm
             {
                 Text = "-",
                 ForeColor = Color.White,
-                BackColor = Color.FromArgb(128, 224, 224),
+                BackColor = AppColorConfig.CardPOSProduct,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 TextAlign = ContentAlignment.MiddleCenter,
                 Size = new Size(circleSize, circleSize),
                 Cursor = Cursors.Hand,
                 Location = new Point(250, centerY - circleRadius)
             };
-            btnMinus.MouseEnter += (s, e) => btnMinus.BackColor = Color.FromArgb(64, 192, 192);
-            btnMinus.MouseLeave += (s, e) => btnMinus.BackColor = Color.FromArgb(128, 224, 224);
+            btnMinus.MouseEnter += (s, e) => btnMinus.BackColor = AppColorConfig.LightBlue ;
+            btnMinus.MouseLeave += (s, e) => btnMinus.BackColor = AppColorConfig.CardPOSProduct; 
             btnMinus.Click += (s, e) =>
             {
                 int qty = int.Parse(lblQty.Text);
@@ -149,14 +149,18 @@ namespace POS_Inventory.Form.POSForm
             ApplyRounding(btnMinus, circleRadius); // perfect circle
 
             // --- Delete Button (X circular) ---
-            picDelete = new PictureBox
+            btnDelete = new Label
             {
                 Size = new Size(circleSize, circleSize),
-                BackColor = Color.FromArgb(128, 224, 224),
+                BackColor = AppColorConfig.CardPOSProduct,
+                ForeColor = Color.White,
                 Cursor = Cursors.Hand,
                 Location = new Point(290, centerY - circleRadius)
             };
-            picDelete.Paint += (s, e) =>
+            btnDelete.MouseEnter += (s, e) => btnDelete.BackColor = AppColorConfig.LightBlue;
+            btnDelete.MouseLeave += (s, e) => btnDelete.BackColor = AppColorConfig.CardPOSProduct;
+
+            btnDelete.Paint += (s, e) =>
             {
                 using (var b = new SolidBrush(Color.White))
                 {
@@ -164,13 +168,13 @@ namespace POS_Inventory.Form.POSForm
                     e.Graphics.DrawString("X", new Font("Segoe UI", 10, FontStyle.Bold), b, new PointF(7, 5));
                 }
             };
-            picDelete.Click += (s, e) =>
+            btnDelete.Click += (s, e) =>
             {
                 new ItemOrderConfig().DeleteItem(ItemName);
                 this.Parent.Controls.Remove(this);
                 OnItemDeleted?.Invoke();
             };
-            ApplyRounding(picDelete, circleRadius); // perfect circle
+            ApplyRounding(btnDelete, circleRadius); // perfect circle
 
             // --- Add controls ---
             this.Controls.Add(lblItemName);
@@ -178,7 +182,7 @@ namespace POS_Inventory.Form.POSForm
             this.Controls.Add(btnPlus);
             this.Controls.Add(lblQty);
             this.Controls.Add(btnMinus);
-            this.Controls.Add(picDelete);
+            this.Controls.Add(btnDelete);
         }
 
         public string ItemName
