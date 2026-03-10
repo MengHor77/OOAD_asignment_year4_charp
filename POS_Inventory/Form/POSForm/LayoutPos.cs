@@ -80,6 +80,15 @@ namespace POS_Inventory.Form.POSForm
                 Location = new Point(35, 10)
             };
 
+            // 1. Create a spacer panel
+            Panel spacer = new Panel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 50, // This is your gap size
+                BackColor = Color.Transparent
+            };
+
+
             // Use ONLY these event assignments
             txtSearch.Enter += TxtSearch_Enter;
             txtSearch.Leave += TxtSearch_Leave;
@@ -149,6 +158,7 @@ namespace POS_Inventory.Form.POSForm
                 Font = new Font("Segoe UI", 11, FontStyle.Bold),
                 ForeColor = AppColorConfig.White,
                 BackColor = AppColorConfig.LightBlue,
+               
                 TextAlign = ContentAlignment.MiddleCenter, 
                 Dock = DockStyle.Top,
                 Height = 45 
@@ -174,6 +184,7 @@ namespace POS_Inventory.Form.POSForm
 
             // IMPORTANT ORDER: Add Bottom and Top first, then the Fill panel
             pnlOrderSidebar.Controls.Add(flowItemsOrder);
+            pnlOrderSidebar.Controls.Add(spacer);
             pnlOrderSidebar.Controls.Add(pnlOrderBottom);
             pnlOrderSidebar.Controls.Add(lblOrderTitle);
 
