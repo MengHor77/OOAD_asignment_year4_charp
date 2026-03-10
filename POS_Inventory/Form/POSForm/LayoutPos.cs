@@ -145,9 +145,10 @@ namespace POS_Inventory.Form.POSForm
                 Height = 110
             };
             lblTotal = new Label {
-                Text = "total Amount: 0.00$",
-                ForeColor = AppColorConfig.GrayDark,
-                BackColor = Color.FromArgb(100, 255, 255, 255),
+                Text = "Total Amount: 0.00$",
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                ForeColor = AppColorConfig.White,
+                BackColor = AppColorConfig.LightBlue,
                 TextAlign = ContentAlignment.MiddleCenter, 
                 Dock = DockStyle.Top,
                 Height = 45 
@@ -155,7 +156,8 @@ namespace POS_Inventory.Form.POSForm
             btnSubmit = new Button {
                 Text = "SUBMIT",
                 FlatStyle = FlatStyle.Flat,
-                ForeColor = AppColorConfig.TextLight,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                ForeColor = AppColorConfig.White,
                 BackColor = AppColorConfig.BtnSave,
                 Dock = DockStyle.Bottom,
                 Height = 45 

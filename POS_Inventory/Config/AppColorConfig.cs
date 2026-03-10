@@ -31,12 +31,13 @@ namespace POS_Inventory.Config
    // 
         //btn save btn cancel                                                              
         public static Color BtnSave = Color.FromArgb(40, 167, 69);   
-        public static Color BtnCancel = Color.Gray;
+        public static Color BtnCancel = Color.Gray;   
 
         // Add at the bottom of AppColorConfig class (with other colors)
         public static Color Gray = Color.FromArgb(128, 128, 128);      // standard gray
         public static Color GrayLight = Color.FromArgb(235, 232, 232); // for backgrounds
         public static Color GrayDark = Color.FromArgb(100, 100, 100);  // for text
+        public static Color LightBlue = Color.FromArgb(50, 137, 230);      // standard gray
 
 
         // Hover & Selection
