@@ -41,7 +41,6 @@ namespace POS_Inventory.Form.POSForm
                 Dock = DockStyle.Top,
                 Height = 70, 
                 BackColor = AppColorConfig.HeaderPink,
-               // Padding = new Padding(0, 100, 0, 0)//Padding = new Padding(left, top, right, bottom)
             };
             this.Controls.Add(pnlTopNav);
 
@@ -119,7 +118,7 @@ namespace POS_Inventory.Form.POSForm
             // --- 3. Main Content Wrapper ---
             pnlMainContent = new Panel {
                 Dock = DockStyle.Fill,
-                BackColor = AppColorConfig.CardStaff,
+                BackColor = AppColorConfig.ContentBackground,
                 Padding = new Padding(80, 90, 20, 20)
             };//left, top , right , buttom 
       

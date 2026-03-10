@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using POS_Inventory.Config;
+
 
 namespace POS_Inventory.Form.POSForm
 {
@@ -22,7 +24,7 @@ namespace POS_Inventory.Form.POSForm
         private void SetupCardDesign()
         {
             this.Size = new Size(191, 240);
-            this.BackColor = Color.FromArgb(150, 145, 200);
+            this.BackColor = AppColorConfig.CardPOSProduct;
             this.Padding = new Padding(10);
             this.Margin = new Padding(10);
             this.Cursor = Cursors.Hand;

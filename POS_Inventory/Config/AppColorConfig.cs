@@ -27,7 +27,8 @@ namespace POS_Inventory.Config
         // Dashboard Cards
         public static Color CardStaff = Color.FromArgb(174, 192, 225);     // Light Blue Card
         public static Color CardProduct = Color.FromArgb(112, 160, 255);   // Vibrant Blue Card
-                                                                           // 
+        public static Color CardPOSProduct = Color.FromArgb(123, 164, 224);
+   // 
         //btn save btn cancel                                                              
         public static Color BtnSave = Color.FromArgb(40, 167, 69);   
         public static Color BtnCancel = Color.Gray;
