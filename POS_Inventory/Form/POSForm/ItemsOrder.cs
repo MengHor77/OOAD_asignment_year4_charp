@@ -67,7 +67,7 @@ namespace POS_Inventory.Form.POSForm
                 AutoSize = false,
                 Size = new Size(150, 25),
                 TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(15, centerY - 12)
+                Location = new Point(10, centerY - 20)
             };
 
             // --- Price Per Unit Label ---
@@ -79,7 +79,7 @@ namespace POS_Inventory.Form.POSForm
                 AutoSize = false,
                 Size = new Size(80, 20),
                 TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(15, centerY + 8)
+                Location = new Point(10, centerY + 8)
             };
 
             int circleSize = 30; // Width = Height for perfect circle
