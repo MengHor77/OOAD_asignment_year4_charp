@@ -14,12 +14,12 @@ namespace POS_Inventory.Form.POSForm
         private FlowLayoutPanel flowProductGrid, flowItemsOrder;
         private Button btnSubmit, btnLogout;
         private DataTable productTable;
-        private ProductConfig _productRepo = new ProductConfig();
+        private readonly  ProductConfig _productRepo = new ProductConfig();
         [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
         private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPWStr)] string lParam);
 
-        private ItemOrderConfig _orderRepo = new ItemOrderConfig();
-        private SaleConfig _saleRepo = new SaleConfig();
+        private readonly  ItemOrderConfig _orderRepo = new ItemOrderConfig();
+        private readonly  SaleConfig _saleRepo = new SaleConfig();
 
 
         public LayoutPos()
@@ -147,7 +147,7 @@ namespace POS_Inventory.Form.POSForm
             pnlMainContent = new Panel {
                 Dock = DockStyle.Fill,
                 BackColor = AppColorConfig.ContentBackground,
-                Padding = new Padding(80, 90, 20, 20)
+                Padding = new Padding(80, 90, 0, 20)
             };//left, top , right , buttom 
       
             this.Controls.Add(pnlMainContent);
@@ -155,9 +155,9 @@ namespace POS_Inventory.Form.POSForm
             // --- 4. Order Sidebar (Right) ---
             pnlOrderSidebar = new Panel {
                 Dock = DockStyle.Right,
-                Width = 348,
+                Width = 370,
                 BackColor = AppColorConfig.GrayLight,
-                Padding = new Padding(10, 10, 10, 20) //left, top , right , buttom 
+                Padding = new Padding(10, 0, 0, 20) //left, top , right , buttom 
             };
 
             lblOrderTitle = new Label { 
@@ -330,13 +330,6 @@ namespace POS_Inventory.Form.POSForm
         }
 
 
-        //private void AddProductToOrder(string name, decimal price)
-        //{
-        //    ItemsOrder item = new ItemsOrder();
-        //    item.ItemName = name;
-        //    item.Quantity = 1;
-        //    flowItemsOrder.Controls.Add(item);
-        //}
 
         private void PerformLogout()
         {
@@ -406,7 +399,7 @@ namespace POS_Inventory.Form.POSForm
 
             newItem.OnQuantityChanged += UpdateTotal;
             newItem.OnItemDeleted += UpdateTotal;
-
+            newItem.UnitPrice = price; // use the price passed as parameter
             flowItemsOrder.Controls.Add(newItem);
 
             _orderRepo.InsertItem(name, price, 1);

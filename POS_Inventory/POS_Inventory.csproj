@@ -219,6 +219,9 @@
     <EmbeddedResource Include="Form\AdminForm\Page\Product\ProductPage.resx">
       <DependentUpon>ProductPage.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form\POSForm\LayoutPos.resx">
+      <DependentUpon>LayoutPos.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

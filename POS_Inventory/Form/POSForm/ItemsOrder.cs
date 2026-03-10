@@ -16,6 +16,7 @@ namespace POS_Inventory.Form.POSForm
         private PictureBox picDelete;
         public event Action OnQuantityChanged;
         public event Action OnItemDeleted;
+        private Label lblPricePerUnit;
 
         // Constructor
         public ItemsOrder()
@@ -44,125 +45,142 @@ namespace POS_Inventory.Form.POSForm
                 control.Region = new Region(path);
             }
         }
-
-
-
-        // Setup the design of the order row
         private void SetupOrderRowDesign()
         {
-            // UserControl properties
-            this.Size = new Size(298, 60);
-            this.BackColor = AppColorConfig.CardPOSProduct;
+            // --- UserControl properties ---
+            this.Size = new Size(330, 60);
+            this.BackColor = Color.LightGray; // temporary background
             this.Margin = new Padding(0, 8, 0, 8);
 
             int centerY = this.Height / 2;
 
+            // --- Apply rounded corners to UserControl ---
+            this.Load += (s, e) => ApplyRounding(this, 15);
+            this.Resize += (s, e) => ApplyRounding(this, 15);
+
             // --- Item Name Label ---
             lblItemName = new Label
             {
-                Text = "Item",
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 10),
+                Text = "iphone",
+                ForeColor = Color.Black,
+                Font = new Font("Segoe UI", 12, FontStyle.Regular),
                 AutoSize = false,
-                Size = new Size(120, 25),
+                Size = new Size(150, 25),
                 TextAlign = ContentAlignment.MiddleLeft,
-                Location = new Point(10, 0) // Y will adjust below
+                Location = new Point(15, centerY - 12)
             };
-            lblItemName.Top = centerY - lblItemName.Height / 2;
 
-            // --- Minus Button ---
-            btnMinus = new Label
+            // --- Price Per Unit Label ---
+            lblPricePerUnit = new Label
             {
-                Text = "_", // proper dash
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 10, FontStyle.Bold),
-                AutoSize = true,
-                Cursor = Cursors.Hand,
-                Location = new Point(165, 0) // X position
-            };
-            btnMinus.Top = centerY - btnMinus.Height / 2;
-
-            btnMinus.Click += (s, e) =>
-            {
-                int qty = int.Parse(lblQty.Text);
-
-                if (qty > 1)
-                {
-                    qty--;
-                    lblQty.Text = qty.ToString();
-
-                    new ItemOrderConfig().UpdateQty(ItemName, qty);
-
-                    OnQuantityChanged?.Invoke();
-                }
+                Text = "30$/ unit",
+                ForeColor = Color.Black,
+                Font = new Font("Segoe UI", 9, FontStyle.Regular),
+                AutoSize = false,
+                Size = new Size(80, 20),
+                TextAlign = ContentAlignment.MiddleLeft,
+                Location = new Point(15, centerY + 8)
             };
 
+            int circleSize = 30; // Width = Height for perfect circle
+            int circleRadius = circleSize / 2;
 
-
-            // --- Quantity Label ---
-            lblQty = new Label
-            {
-                Text = "1",
-                ForeColor = Color.White,
-                Font = new Font("Segoe UI", 10),
-                AutoSize = true,
-                Location = new Point(190, 0)
-            };
-            lblQty.Top = centerY - lblQty.Height / 2;
-
-            // --- Plus Button ---
+            // --- Plus Button (circular) ---
             btnPlus = new Label
             {
                 Text = "+",
                 ForeColor = Color.White,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                AutoSize = true,
+                BackColor = Color.FromArgb(128, 224, 224), // cyan
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Size = new Size(circleSize, circleSize),
                 Cursor = Cursors.Hand,
-                Location = new Point(220, 0)
+                Location = new Point(180, centerY - circleRadius)
             };
-            btnPlus.Top = centerY - btnPlus.Height / 2;
-
+            btnPlus.MouseEnter += (s, e) => btnPlus.BackColor = Color.FromArgb(64, 192, 192);
+            btnPlus.MouseLeave += (s, e) => btnPlus.BackColor = Color.FromArgb(128, 224, 224);
             btnPlus.Click += (s, e) =>
             {
                 int qty = int.Parse(lblQty.Text);
                 qty++;
                 lblQty.Text = qty.ToString();
-
                 new ItemOrderConfig().UpdateQty(ItemName, qty);
-
                 OnQuantityChanged?.Invoke();
             };
+            ApplyRounding(btnPlus, circleRadius); // perfect circle
 
+            // --- Quantity Label ---
+            lblQty = new Label
+            {
+                Text = "3",
+                ForeColor = Color.Black,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                AutoSize = false,
+                Size = new Size(20, circleSize),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Location = new Point(220, centerY - circleRadius)
+            };
 
-            // --- Delete Icon ---
+            // --- Minus Button (circular) ---
+            btnMinus = new Label
+            {
+                Text = "-",
+                ForeColor = Color.White,
+                BackColor = Color.FromArgb(128, 224, 224),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Size = new Size(circleSize, circleSize),
+                Cursor = Cursors.Hand,
+                Location = new Point(250, centerY - circleRadius)
+            };
+            btnMinus.MouseEnter += (s, e) => btnMinus.BackColor = Color.FromArgb(64, 192, 192);
+            btnMinus.MouseLeave += (s, e) => btnMinus.BackColor = Color.FromArgb(128, 224, 224);
+            btnMinus.Click += (s, e) =>
+            {
+                int qty = int.Parse(lblQty.Text);
+                if (qty > 1)
+                {
+                    qty--;
+                    lblQty.Text = qty.ToString();
+                    new ItemOrderConfig().UpdateQty(ItemName, qty);
+                    OnQuantityChanged?.Invoke();
+                }
+            };
+            ApplyRounding(btnMinus, circleRadius); // perfect circle
+
+            // --- Delete Button (X circular) ---
             picDelete = new PictureBox
             {
-                Size = new Size(20, 20),
-                SizeMode = PictureBoxSizeMode.Zoom,
-                Image = SystemIcons.Error.ToBitmap(), // replace with your icon if needed
+                Size = new Size(circleSize, circleSize),
+                BackColor = Color.FromArgb(128, 224, 224),
                 Cursor = Cursors.Hand,
-                Location = new Point(260, 0)
+                Location = new Point(290, centerY - circleRadius)
             };
-            picDelete.Top = centerY - picDelete.Height / 2;
-
+            picDelete.Paint += (s, e) =>
+            {
+                using (var b = new SolidBrush(Color.White))
+                {
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    e.Graphics.DrawString("X", new Font("Segoe UI", 10, FontStyle.Bold), b, new PointF(7, 5));
+                }
+            };
             picDelete.Click += (s, e) =>
             {
                 new ItemOrderConfig().DeleteItem(ItemName);
-
                 this.Parent.Controls.Remove(this);
-
                 OnItemDeleted?.Invoke();
             };
+            ApplyRounding(picDelete, circleRadius); // perfect circle
 
-
-            // --- Add controls to UserControl ---
+            // --- Add controls ---
             this.Controls.Add(lblItemName);
-            this.Controls.Add(btnMinus);
-            this.Controls.Add(lblQty);
+            this.Controls.Add(lblPricePerUnit);
             this.Controls.Add(btnPlus);
+            this.Controls.Add(lblQty);
+            this.Controls.Add(btnMinus);
             this.Controls.Add(picDelete);
         }
-        // Properties for external access
+
         public string ItemName
         {
             get => lblItemName.Text;
@@ -175,6 +193,17 @@ namespace POS_Inventory.Form.POSForm
             set => lblQty.Text = value.ToString();
         }
         public decimal Price { get; set; }
+
+ 
+        public decimal UnitPrice
+        {
+            get => Price;
+            set
+            {
+                Price = value;
+                lblPricePerUnit.Text = "$" + value.ToString("0.00");
+            }
+        }
 
     }
 }
