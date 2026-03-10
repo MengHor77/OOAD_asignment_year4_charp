@@ -158,11 +158,13 @@ namespace POS_Inventory.Form.POSForm
                 Font = new Font("Segoe UI", 11, FontStyle.Bold),
                 ForeColor = AppColorConfig.White,
                 BackColor = AppColorConfig.LightBlue,
-               
                 TextAlign = ContentAlignment.MiddleCenter, 
                 Dock = DockStyle.Top,
                 Height = 45 
             };
+            lblTotal.Resize += (s, e) => ApplyRounding(lblTotal, 20);
+
+
             btnSubmit = new Button {
                 Text = "SUBMIT",
                 FlatStyle = FlatStyle.Flat,
@@ -173,6 +175,10 @@ namespace POS_Inventory.Form.POSForm
                 Height = 45 
             
             };
+            btnSubmit.FlatAppearance.BorderSize = 0; // Required for clean rounding
+
+            btnSubmit.Resize += (s, e) => ApplyRounding(btnSubmit, 20);
+            
             pnlOrderBottom.Controls.Add(lblTotal);
             pnlOrderBottom.Controls.Add(btnSubmit);
 
@@ -250,6 +256,22 @@ namespace POS_Inventory.Form.POSForm
 
                     flowProductGrid.Controls.Add(card);
                 }
+            }
+        }
+
+        private void ApplyRounding(Control control, int radius)
+        {
+            if (control.Width <= 0 || control.Height <= 0) return;
+
+            using (System.Drawing.Drawing2D.GraphicsPath path = new System.Drawing.Drawing2D.GraphicsPath())
+            {
+                path.AddArc(0, 0, radius, radius, 180, 90);
+                path.AddArc(control.Width - radius, 0, radius, radius, 270, 90);
+                path.AddArc(control.Width - radius, control.Height - radius, radius, radius, 0, 90);
+                path.AddArc(0, control.Height - radius, radius, radius, 90, 90);
+                path.CloseAllFigures();
+
+                control.Region = new Region(path);
             }
         }
 
