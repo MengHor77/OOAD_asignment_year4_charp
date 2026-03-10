@@ -197,7 +197,9 @@ namespace POS_Inventory
 
             try
             {
-                DataTable result = userConfig.ValidateLogin(identifier, pass);
+                UserConfig userRepo = new UserConfig();
+
+                DataTable result = userRepo.ValidateLogin(identifier, txtPassword.Text);
                 if (result != null && result.Rows.Count > 0)
                 {
                     string dbRole = result.Rows[0]["role"].ToString();
@@ -213,8 +215,13 @@ namespace POS_Inventory
                         }
                         else if (dbRole == "Cashier")
                         {
-                            
-                             LayoutPos cashierForm = new LayoutPos();
+                            UserSession.UserId = Convert.ToInt32(result.Rows[0]["id"]);
+                            UserSession.Username = result.Rows[0]["username"].ToString();
+                            UserSession.Role = result.Rows[0]["role"].ToString();
+                            UserSession.Email = result.Rows[0]["email"].ToString();
+
+                            LayoutPos cashierForm = new LayoutPos();
+
                             cashierForm.Show();
                             this.Hide();
                         }

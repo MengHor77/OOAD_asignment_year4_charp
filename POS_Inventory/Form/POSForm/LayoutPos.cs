@@ -23,6 +23,8 @@ namespace POS_Inventory.Form.POSForm
             LayoutDesign();
             LoadProductsFromDatabase();
             SetSearchPlaceholder();
+            lblCashierName.Text = "User: " + UserSession.Username;
+
             this.ActiveControl = lblSystemName;
 
         }
@@ -84,11 +86,14 @@ namespace POS_Inventory.Form.POSForm
 
             pnlSearchContainer.Controls.Add(txtSearch);
 
-            lblCashierName = new Label { 
+            lblCashierName = new Label {
+                Text = "",
                 ForeColor = AppColorConfig.TextLight,
                 Location = new Point(pnlTopNav.Width - 140, 25),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                AutoSize = true
+                AutoSize = true,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+
             };
             pnlTopNav.Controls.Add(lblCashierName);
 

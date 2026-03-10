@@ -108,6 +108,7 @@
     <Compile Include="Config\CategoryConfig.cs" />
     <Compile Include="Config\ProductConfig.cs" />
     <Compile Include="Config\UserConfig.cs" />
+    <Compile Include="Config\UserSession.cs" />
     <Compile Include="FormLogin.cs">
       <SubType>Form</SubType>
     </Compile>
