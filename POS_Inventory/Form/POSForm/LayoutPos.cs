@@ -56,7 +56,7 @@ namespace POS_Inventory.Form.POSForm
             lblSystemName = new Label {
                 Text = "Pos System",
                 ForeColor = AppColorConfig.TextLight,
-                Font = new Font("Segoe UI", 18),
+                Font = new Font("Segoe UI", 18, FontStyle.Bold),
                 Location = new Point(70, 18), 
                 AutoSize = true };
             pnlTopNav.Controls.Add(lblSystemName);
