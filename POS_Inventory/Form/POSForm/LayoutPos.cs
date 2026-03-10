@@ -128,13 +128,13 @@ namespace POS_Inventory.Form.POSForm
             pnlOrderSidebar = new Panel {
                 Dock = DockStyle.Right,
                 Width = 348,
-                BackColor = AppColorConfig.CardProduct,
+                BackColor = AppColorConfig.GrayLight,
                 Padding = new Padding(10, 10, 10, 20) //left, top , right , buttom 
             };
 
             lblOrderTitle = new Label { 
                 Text = "Items Orders",
-                ForeColor = AppColorConfig.TextLight,
+                ForeColor = AppColorConfig.GrayDark,
                 Font = new Font("Segoe UI", 11, FontStyle.Bold), 
                 Dock = DockStyle.Top, 
                 Height = 30 
@@ -146,7 +146,7 @@ namespace POS_Inventory.Form.POSForm
             };
             lblTotal = new Label {
                 Text = "total Amount: 0.00$",
-                ForeColor = AppColorConfig.TextLight,
+                ForeColor = AppColorConfig.GrayDark,
                 BackColor = Color.FromArgb(100, 255, 255, 255),
                 TextAlign = ContentAlignment.MiddleCenter, 
                 Dock = DockStyle.Top,

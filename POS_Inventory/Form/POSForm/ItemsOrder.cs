@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using POS_Inventory.Config;
+
 
 namespace POS_Inventory.Form.POSForm
 {
@@ -25,7 +27,7 @@ namespace POS_Inventory.Form.POSForm
         {
             // UserControl properties
             this.Size = new Size(298, 45);
-            this.BackColor = Color.FromArgb(170, 160, 230);
+            this.BackColor = AppColorConfig.CardPOSProduct;
             this.Margin = new Padding(0, 8, 0, 8);
 
             // Delete icon
