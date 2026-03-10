@@ -170,8 +170,11 @@ namespace POS_Inventory.Form.POSForm
 
             Panel pnlOrderBottom = new Panel {
                 Dock = DockStyle.Bottom, 
-                Height = 110
+                Height = 110,
+                Padding =new Padding(10,0,20,0),//(left, top, right, bottom)
             };
+
+           
             lblTotal = new Label {
                 Text = "Total Amount: 0.00$",
                 Font = new Font("Segoe UI", 11, FontStyle.Bold),
@@ -191,8 +194,8 @@ namespace POS_Inventory.Form.POSForm
                 ForeColor = AppColorConfig.White,
                 BackColor = AppColorConfig.BtnSave,
                 Dock = DockStyle.Bottom,
-                Height = 45 
-            
+                Height = 45 ,
+
             };
             btnSubmit.FlatAppearance.BorderSize = 0; // Required for clean rounding
 
