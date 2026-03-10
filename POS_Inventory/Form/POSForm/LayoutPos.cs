@@ -171,7 +171,7 @@ namespace POS_Inventory.Form.POSForm
             Panel pnlOrderBottom = new Panel {
                 Dock = DockStyle.Bottom, 
                 Height = 110,
-                Padding =new Padding(10,0,20,0),//(left, top, right, bottom)
+                Padding =new Padding(0,0,30,0),//(left, top, right, bottom)
             };
 
            
