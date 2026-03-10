@@ -10,9 +10,9 @@ namespace POS_Inventory.Form.POSForm
     {
         private Panel pnlTopNav, pnlSideNav, pnlMainContent, pnlSearchContainer, pnlOrderSidebar;
         private TextBox txtSearch;
-        private Label lblLogo, lblSystemName, lblCashierName, lblLogout, lblOrderTitle, lblTotal;
+        private Label  lblSystemName, lblCashierName, lblOrderTitle, lblTotal;
         private FlowLayoutPanel flowProductGrid, flowItemsOrder;
-        private Button btnSubmit;
+        private Button btnSubmit, btnLogout;
         private DataTable productTable;
         private ProductConfig _productRepo = new ProductConfig();
         [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
@@ -108,21 +108,34 @@ namespace POS_Inventory.Form.POSForm
             pnlTopNav.Controls.Add(lblCashierName);
 
             // --- 2. Side Navigation ---
-            pnlSideNav = new Panel { 
-                Dock = DockStyle.Left, Width = 70,
-                BackColor = AppColorConfig.SidebarRed
+            pnlSideNav = new Panel
+            {
+                Dock = DockStyle.Left,
+                Width = 80, // Slightly wider to fit a button better
+                BackColor = AppColorConfig.SidebarRed,
+                Padding = new Padding(5, 0, 5, 20) // Adds padding so button doesn't touch edges
             };
             this.Controls.Add(pnlSideNav);
 
-            lblLogout = new Label {
-                Text = "logout",
-                ForeColor = AppColorConfig.TextLight,
-                Location = new Point(10, 600),
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
-                Cursor = Cursors.Hand,
-                AutoSize = true };
-            lblLogout.Click += (s, e) => PerformLogout();
-            pnlSideNav.Controls.Add(lblLogout);
+            // Create the Button instead of the Label
+            btnLogout = new Button
+            {
+                Text = "Logout",
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold), // Slightly smaller font for narrow sidebar
+                ForeColor = AppColorConfig.White,
+                BackColor = Color.FromArgb(200, 0, 0), // A darker red so it's visible on the sidebar
+                Dock = DockStyle.Bottom,
+                Height = 45,
+                Cursor = Cursors.Hand
+            };
+            btnLogout.FlatAppearance.BorderSize = 0;
+
+            // Apply rounding and click event
+            btnLogout.Resize += (s, e) => ApplyRounding(btnLogout, 15);
+            btnLogout.Click += (s, e) => PerformLogout();
+
+            pnlSideNav.Controls.Add(btnLogout);
 
             // --- 3. Main Content Wrapper ---
             pnlMainContent = new Panel {
