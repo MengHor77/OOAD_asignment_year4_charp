@@ -14,6 +14,8 @@ namespace POS_Inventory.Form.POSForm
         private Label btnMinus;
         private Label btnPlus;
         private PictureBox picDelete;
+        public event Action OnQuantityChanged;
+        public event Action OnItemDeleted;
 
         // Constructor
         public ItemsOrder()
@@ -80,6 +82,23 @@ namespace POS_Inventory.Form.POSForm
             };
             btnMinus.Top = centerY - btnMinus.Height / 2;
 
+            btnMinus.Click += (s, e) =>
+            {
+                int qty = int.Parse(lblQty.Text);
+
+                if (qty > 1)
+                {
+                    qty--;
+                    lblQty.Text = qty.ToString();
+
+                    new ItemOrderConfig().UpdateQty(ItemName, qty);
+
+                    OnQuantityChanged?.Invoke();
+                }
+            };
+
+
+
             // --- Quantity Label ---
             lblQty = new Label
             {
@@ -103,6 +122,18 @@ namespace POS_Inventory.Form.POSForm
             };
             btnPlus.Top = centerY - btnPlus.Height / 2;
 
+            btnPlus.Click += (s, e) =>
+            {
+                int qty = int.Parse(lblQty.Text);
+                qty++;
+                lblQty.Text = qty.ToString();
+
+                new ItemOrderConfig().UpdateQty(ItemName, qty);
+
+                OnQuantityChanged?.Invoke();
+            };
+
+
             // --- Delete Icon ---
             picDelete = new PictureBox
             {
@@ -113,6 +144,16 @@ namespace POS_Inventory.Form.POSForm
                 Location = new Point(260, 0)
             };
             picDelete.Top = centerY - picDelete.Height / 2;
+
+            picDelete.Click += (s, e) =>
+            {
+                new ItemOrderConfig().DeleteItem(ItemName);
+
+                this.Parent.Controls.Remove(this);
+
+                OnItemDeleted?.Invoke();
+            };
+
 
             // --- Add controls to UserControl ---
             this.Controls.Add(lblItemName);
@@ -133,5 +174,7 @@ namespace POS_Inventory.Form.POSForm
             get => int.Parse(lblQty.Text);
             set => lblQty.Text = value.ToString();
         }
+        public decimal Price { get; set; }
+
     }
 }

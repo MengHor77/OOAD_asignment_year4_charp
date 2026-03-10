@@ -48,11 +48,15 @@ namespace POS_Inventory.Form.POSForm
             }
         }
 
-        public string ProductName { get => lblProductName.Text; set => lblProductName.Text = value; }
+        public new string ProductName
+        {
+            get => lblProductName.Text;
+            set => lblProductName.Text = value;
+        }
         public string CategoryName { get => lblCategory.Text; set => lblCategory.Text = "Category: " + value; }
         public string ProductPrice { set => lblPrice.Text = "$" + value; }
         public int Stock { set => lblStock.Text = "stock: " + value; }
-
+        
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);

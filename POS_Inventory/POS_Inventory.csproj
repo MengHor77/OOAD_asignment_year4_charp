@@ -106,7 +106,9 @@
   <ItemGroup>
     <Compile Include="Config\AppColorConfig.cs" />
     <Compile Include="Config\CategoryConfig.cs" />
+    <Compile Include="Config\ItemOrderConfig.cs" />
     <Compile Include="Config\ProductConfig.cs" />
+    <Compile Include="Config\SaleConfig.cs" />
     <Compile Include="Config\UserConfig.cs" />
     <Compile Include="Config\UserSession.cs" />
     <Compile Include="FormLogin.cs">

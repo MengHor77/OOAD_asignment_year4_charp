@@ -17,6 +17,11 @@ namespace POS_Inventory.Form.POSForm
         private ProductConfig _productRepo = new ProductConfig();
         [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
         private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPWStr)] string lParam);
+
+        private ItemOrderConfig _orderRepo = new ItemOrderConfig();
+        private SaleConfig _saleRepo = new SaleConfig();
+
+
         public LayoutPos()
         {
             InitializeComponent();
@@ -30,6 +35,7 @@ namespace POS_Inventory.Form.POSForm
         }
 
         private void LayoutDesign()
+
         {
             this.Text = "POS System";
             this.Size = new Size(1340, 750); 
@@ -191,7 +197,8 @@ namespace POS_Inventory.Form.POSForm
             btnSubmit.FlatAppearance.BorderSize = 0; // Required for clean rounding
 
             btnSubmit.Resize += (s, e) => ApplyRounding(btnSubmit, 20);
-            
+            btnSubmit.Click += BtnSubmit_Click;
+
             pnlOrderBottom.Controls.Add(lblTotal);
             pnlOrderBottom.Controls.Add(btnSubmit);
 
@@ -236,6 +243,20 @@ namespace POS_Inventory.Form.POSForm
             }
         }
 
+        private void UpdateTotal()
+        {
+            decimal total = 0;
+
+            foreach (ItemsOrder item in flowItemsOrder.Controls)
+            {
+                decimal price = item.Price;
+                int qty = item.Quantity;
+
+                total += price * qty;
+            }
+
+            lblTotal.Text = "Total Amount: " + total.ToString("0.00") + "$";
+        }
 
 
         private void TxtSearch_Leave(object sender, EventArgs e)
@@ -309,13 +330,13 @@ namespace POS_Inventory.Form.POSForm
         }
 
 
-        private void AddProductToOrder(string name, decimal price)
-        {
-            ItemsOrder item = new ItemsOrder();
-            item.ItemName = name;
-            item.Quantity = 1;
-            flowItemsOrder.Controls.Add(item);
-        }
+        //private void AddProductToOrder(string name, decimal price)
+        //{
+        //    ItemsOrder item = new ItemsOrder();
+        //    item.ItemName = name;
+        //    item.Quantity = 1;
+        //    flowItemsOrder.Controls.Add(item);
+        //}
 
         private void PerformLogout()
         {
@@ -366,6 +387,60 @@ namespace POS_Inventory.Form.POSForm
 
             DisplayProducts(filteredTable);
         }
+        private void AddProductToOrder(string name, decimal price)
+        {
+            foreach (ItemsOrder item in flowItemsOrder.Controls)
+            {
+                if (item.ItemName == name)
+                {
+                    item.Quantity++;
+                    UpdateTotal();
+                    return;
+                }
+            }
+
+            ItemsOrder newItem = new ItemsOrder();
+            newItem.ItemName = name;
+            newItem.Price = price;
+            newItem.Quantity = 1;
+
+            newItem.OnQuantityChanged += UpdateTotal;
+            newItem.OnItemDeleted += UpdateTotal;
+
+            flowItemsOrder.Controls.Add(newItem);
+
+            _orderRepo.InsertItem(name, price, 1);
+
+            UpdateTotal();
+        }
+
+        private void BtnSubmit_Click(object sender, EventArgs e)
+        {
+            decimal total = 0;
+
+            DataTable dt = _orderRepo.GetItems();
+
+            foreach (DataRow row in dt.Rows)
+            {
+                decimal price = Convert.ToDecimal(row["price"]);
+                int qty = Convert.ToInt32(row["qty"]);
+
+                total += price * qty;
+            }
+
+            bool success = _saleRepo.InsertSale(total);
+
+            if (success)
+            {
+                MessageBox.Show("Sale completed successfully!", "Success");
+
+                flowItemsOrder.Controls.Clear();
+                _orderRepo.ClearItems();
+
+                lblTotal.Text = "Total Amount: 0.00$";
+            }
+        }
+
 
     }
 }
