@@ -29,7 +29,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
         {
             this.Dock = DockStyle.Fill;
             this.BackColor = AppColorConfig.ContentBackground;
-            this.Padding = new Padding(20);
+            this.Padding = new Padding(20,0,20,20);
 
             
 
@@ -203,7 +203,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
                 Font = new Font("Segoe UI", 16, FontStyle.Bold),
                 ForeColor = AppColorConfig.TextDark,
                 AutoSize = true,
-                Location = new Point(20, 12)
+                Location = new Point(0, 20),
+                Padding =new Padding(0,0,0,20),
             };
 
             pnlTitle.Controls.Add(lblTitle);
@@ -214,7 +215,6 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
             this.Controls.Add(pnlFilter);       // Top (second)
             this.Controls.Add(pnlTitle);        // Top (first — added last so it appears at very top)
 
-            this.Padding = new Padding(10, 10, 10, 10);
 
         }
         // =============================================
