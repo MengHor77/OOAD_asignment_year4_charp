@@ -1,9 +1,10 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
 
 namespace POS_Inventory.Config
 {
@@ -78,6 +79,37 @@ namespace POS_Inventory.Config
                 catch { return 0; }
             }
         }
+
+        // ✅ ADD THIS to SaleConfig.cs
+        public DataTable GetSalesByDateRange(DateTime from, DateTime to)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                DataTable dt = new DataTable();
+                try
+                {
+                    conn.Open();
+                    string query = @"SELECT id, total, created_at 
+                             FROM sales 
+                             WHERE created_at >= @from 
+                             AND created_at <= @to 
+                             ORDER BY created_at DESC";
+
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@from", from);
+                    cmd.Parameters.AddWithValue("@to", to);
+
+                    MySqlDataAdapter da = new MySqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("GetSalesByDateRange Error: " + ex.Message);
+                }
+                return dt;
+            }
+        }
+
     }
 }
 

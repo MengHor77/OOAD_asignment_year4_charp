@@ -27,18 +27,18 @@ namespace POS_Inventory.Config
         public static Color CardStaff = Color.FromArgb(174, 192, 225);
         public static Color CardProduct = Color.FromArgb(112, 160, 255);
         public static Color CardPOSProduct = Color.FromArgb(123, 164, 224);
-        public static Color CardAdmin = Color.FromArgb(127, 185, 218);          // ✅ NEW
-        public static Color CardLowStock = Color.FromArgb(255, 249, 230);       // ✅ NEW
+        public static Color CardAdmin = Color.FromArgb(127, 185, 218);           
+        public static Color CardLowStock = Color.FromArgb(255, 249, 230);      
 
         // --- DASHBOARD CARDS (Hover Background) ---
-        public static Color CardStaffHover = Color.FromArgb(140, 165, 205);     // ✅ NEW
-        public static Color CardAdminHover = Color.FromArgb(90, 155, 195);      // ✅ NEW
-        public static Color CardProductHover = Color.FromArgb(70, 125, 220);    // ✅ NEW
-        public static Color CardLowStockHover = Color.FromArgb(255, 236, 153);  // ✅ NEW
+        public static Color CardStaffHover = Color.FromArgb(140, 165, 205);     
+        public static Color CardAdminHover = Color.FromArgb(90, 155, 195);      
+        public static Color CardProductHover = Color.FromArgb(70, 125, 220);     
+        public static Color CardLowStockHover = Color.FromArgb(255, 236, 153);   
 
         // --- LOW STOCK ALERT COLORS ---
-        public static Color LowStockBorder = Color.FromArgb(255, 200, 0);       // ✅ NEW
-        public static Color LowStockText = Color.FromArgb(180, 120, 0);         // ✅ NEW
+        public static Color LowStockBorder = Color.FromArgb(255, 200, 0);        
+        public static Color LowStockText = Color.FromArgb(180, 120, 0);         
 
         // --- BUTTONS ---
         public static Color BtnSave = Color.FromArgb(40, 167, 69);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using POS_Inventory.Config;
 
@@ -11,123 +12,344 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
         private DataGridView dgvReports;
         private DateTimePicker dtFrom, dtTo;
         private Button btnFilter, btnExport, btnPrint;
-        private Label lblTotalRevenue, lblTotalOrders;
+        private Label lblTotalRevenue, lblTotalOrders, lblTitle;
+        private Panel pnlSummary, pnlFilter;
+
+        // --- Repositories ---
+        private readonly SaleConfig _saleConfig = new SaleConfig();
 
         public ReportPage()
         {
             InitializeComponent();
             SetupLayout();
-            LoadReportData(); // Load default data (e.g., today's sales)
+            LoadReportData();
         }
 
         private void SetupLayout()
         {
             this.Dock = DockStyle.Fill;
             this.BackColor = AppColorConfig.ContentBackground;
-            // --- 1. FILTER PANEL (TOP) ---
-            Panel pnlFilter = new Panel { Dock = DockStyle.Top, Height = 80, BackColor = Color.FromArgb(245, 245, 245) };
+            this.Padding = new Padding(20);
 
-            Label lblFrom = new Label {
-                Text = "From:", Location = new Point(20, 15),
+            // =============================================
+            // 1. PAGE TITLE
+            // =============================================
+            lblTitle = new Label
+            {
+                Text = "📊  Sales Report",
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                ForeColor = AppColorConfig.TextDark,
                 AutoSize = true,
-                Padding = new Padding(0, 20, 0, 0),// left, top, right, bottom
-
+                Location = new Point(20, 15)
             };
-            dtFrom = new DateTimePicker { Location = new Point(20, 35), Width = 150, Format = DateTimePickerFormat.Short };
+            this.Controls.Add(lblTitle);
 
-            Label lblTo = new Label { Text = "To:", Location = new Point(190, 15), AutoSize = true };
-            dtTo = new DateTimePicker { Location = new Point(190, 35), Width = 150, Format = DateTimePickerFormat.Short };
+            // =============================================
+            // 2. FILTER PANEL
+            // =============================================
+            pnlFilter = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 90,
+                BackColor = AppColorConfig.GrayLight,
+                Padding = new Padding(20, 0, 20, 0)
+            };
 
-            btnFilter = CreateBtn("Filter Data", Color.RoyalBlue, 360, 32);
-            btnExport = CreateBtn("Export Excel", Color.SeaGreen, 470, 32);
-            btnPrint = CreateBtn("Print PDF", Color.DarkOrange, 580, 32);
+            pnlFilter.Paint += (s, e) =>
+            {
+                using (GraphicsPath gp = new GraphicsPath())
+                {
+                    int r = 10;
+                    gp.AddArc(0, 0, r, r, 180, 90);
+                    gp.AddArc(pnlFilter.Width - r, 0, r, r, 270, 90);
+                    gp.AddArc(pnlFilter.Width - r, pnlFilter.Height - r, r, r, 0, 90);
+                    gp.AddArc(0, pnlFilter.Height - r, r, r, 90, 90);
+                    gp.CloseAllFigures();
+                    pnlFilter.Region = new Region(gp);
+                }
+            };
+
+            Label lblFrom = new Label
+            {
+                Text = "📅  From:",
+                Location = new Point(20, 20),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                ForeColor = AppColorConfig.TextDark
+            };
+
+            dtFrom = new DateTimePicker
+            {
+                Location = new Point(20, 45),
+                Width = 160,
+                Format = DateTimePickerFormat.Short,
+                Font = new Font("Segoe UI", 10),
+                Value = DateTime.Today.AddDays(-30) // default: last 30 days
+            };
+
+            Label lblTo = new Label
+            {
+                Text = "📅  To:",
+                Location = new Point(200, 20),
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                ForeColor = AppColorConfig.TextDark
+            };
+
+            dtTo = new DateTimePicker
+            {
+                Location = new Point(200, 45),
+                Width = 160,
+                Format = DateTimePickerFormat.Short,
+                Font = new Font("Segoe UI", 10),
+                Value = DateTime.Today // default: today
+            };
+
+            btnFilter = CreateBtn("🔍  Filter", AppColorConfig.BrandBlue, 390, 40);
+            btnExport = CreateBtn("📥  Export", AppColorConfig.BtnSave, 510, 40);
+            btnPrint = CreateBtn("🖨️  Print", AppColorConfig.LightBlue, 630, 40);
 
             btnFilter.Click += (s, e) => LoadReportData();
-            btnExport.Click += (s, e) => MessageBox.Show("Exporting to Excel...");
+            btnExport.Click += (s, e) => MessageBox.Show("Exporting to Excel...", "Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            btnPrint.Click += (s, e) => MessageBox.Show("Printing PDF...", "Print", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             pnlFilter.Controls.AddRange(new Control[] { lblFrom, dtFrom, lblTo, dtTo, btnFilter, btnExport, btnPrint });
 
-            // --- 2. SUMMARY PANEL (BOTTOM) ---
-            Panel pnlSummary = new Panel { Dock = DockStyle.Bottom, Height = 60, BackColor = Color.FromArgb(230, 230, 230) };
-
-            lblTotalRevenue = new Label
+            // =============================================
+            // 3. SUMMARY CARDS PANEL
+            // =============================================
+            pnlSummary = new Panel
             {
-                Text = "Total Revenue: $0.00",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                ForeColor = Color.DarkGreen,
-                Location = new Point(20, 20),
-                AutoSize = true
+                Dock = DockStyle.Bottom,
+                Height = 90,
+                BackColor = AppColorConfig.ContentBackground,
+                Padding = new Padding(0, 10, 0, 0)
             };
 
-            lblTotalOrders = new Label
-            {
-                Text = "Total Orders: 0",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                Location = new Point(300, 20),
-                AutoSize = true
-            };
+            Panel cardRevenue = CreateSummaryCard(
+                "💰  Total Revenue",
+                "$0.00",
+                AppColorConfig.CardProduct,
+                AppColorConfig.CardProductHover,
+                out lblTotalRevenue
+            );
+            cardRevenue.Location = new Point(20, 10);
 
-            pnlSummary.Controls.AddRange(new Control[] { lblTotalRevenue, lblTotalOrders });
+            Panel cardOrders = CreateSummaryCard(
+                "🧾  Total Orders",
+                "0",
+                AppColorConfig.CardStaff,
+                AppColorConfig.CardStaffHover,
+                out lblTotalOrders
+            );
+            cardOrders.Location = new Point(280, 10);
 
-            // --- 3. DATA GRID ---
+            pnlSummary.Controls.Add(cardRevenue);
+            pnlSummary.Controls.Add(cardOrders);
+
+            // =============================================
+            // 4. DATA GRID
+            // =============================================
             dgvReports = new DataGridView
             {
                 Dock = DockStyle.Fill,
-                BackgroundColor = Color.White,
+                BackgroundColor = AppColorConfig.White,
                 BorderStyle = BorderStyle.None,
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
                 AllowUserToAddRows = false,
                 ReadOnly = true,
-                RowHeadersVisible = false
+                RowHeadersVisible = false,
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                GridColor = Color.FromArgb(220, 230, 245),
+                RowTemplate = { Height = 40 },
+                ColumnHeadersHeight = 45,
+                EnableHeadersVisualStyles = false,
+                Font = new Font("Segoe UI", 10)
             };
 
+            dgvReports.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = AppColorConfig.CardProduct,
+                ForeColor = AppColorConfig.White,
+                Font = new Font("Segoe UI", 11, FontStyle.Bold),
+                Alignment = DataGridViewContentAlignment.MiddleCenter,
+                Padding = new Padding(5)
+            };
+
+            dgvReports.DefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = AppColorConfig.White,
+                ForeColor = AppColorConfig.TextDark,
+                SelectionBackColor = Color.FromArgb(210, 228, 255),
+                SelectionForeColor = AppColorConfig.TextDark,
+                Alignment = DataGridViewContentAlignment.MiddleCenter,
+                Padding = new Padding(5)
+            };
+
+            dgvReports.AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle
+            {
+                BackColor = Color.FromArgb(240, 245, 255),
+                ForeColor = AppColorConfig.TextDark,
+                SelectionBackColor = Color.FromArgb(210, 228, 255),
+                SelectionForeColor = AppColorConfig.TextDark,
+                Alignment = DataGridViewContentAlignment.MiddleCenter,
+                Padding = new Padding(5)
+            };
+
+            // =============================================
+            // 5. ADD ALL TO FORM
+            // =============================================
             this.Controls.Add(dgvReports);
             this.Controls.Add(pnlSummary);
             this.Controls.Add(pnlFilter);
+            this.Controls.Add(lblTitle);
+
+            this.Padding = new Padding(20, 60, 20, 10);
         }
 
+        // =============================================
+        // LOAD REAL DATA FROM DATABASE
+        // =============================================
+        private void LoadReportData()
+        {
+            try
+            {
+                DateTime from = dtFrom.Value.Date;
+                DateTime to = dtTo.Value.Date.AddDays(1).AddSeconds(-1); // include full end day
+
+                DataTable dt = _saleConfig.GetSalesByDateRange(from, to);
+
+                // Build display table
+                DataTable displayTable = new DataTable();
+                displayTable.Columns.Add("No");
+                displayTable.Columns.Add("Date");
+                displayTable.Columns.Add("Total Amount ($)");
+                displayTable.Columns.Add("Status");
+
+                decimal grandTotal = 0;
+                int orderCount = 0;
+
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        orderCount++;
+                        decimal rowTotal = Convert.ToDecimal(row["total"]);
+                        grandTotal += rowTotal;
+
+                        displayTable.Rows.Add(
+                            orderCount.ToString(),
+                            Convert.ToDateTime(row["created_at"]).ToString("dd/MM/yyyy  HH:mm"),
+                            "$" + rowTotal.ToString("0.00"),
+                            "✅ Completed"
+                        );
+                    }
+                }
+
+                dgvReports.DataSource = displayTable;
+                UpdateSummary(grandTotal, orderCount);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading report:\n" + ex.Message, "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void UpdateSummary(decimal revenue, int orders)
+        {
+            lblTotalRevenue.Text = "$" + revenue.ToString("0.00");
+            lblTotalOrders.Text = orders.ToString();
+        }
+
+        // =============================================
+        // HELPER: Create action button
+        // =============================================
         private Button CreateBtn(string text, Color color, int x, int y)
         {
             Button btn = new Button
             {
                 Text = text,
-                Size = new Size(100, 35),
+                Size = new Size(110, 36),
                 Location = new Point(x, y),
                 BackColor = color,
-                ForeColor = Color.White,
+                ForeColor = AppColorConfig.White,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
             btn.FlatAppearance.BorderSize = 0;
+
+            Color original = color;
+            btn.MouseEnter += (s, e) => btn.BackColor = ControlPaint.Dark(color, 0.1f);
+            btn.MouseLeave += (s, e) => btn.BackColor = original;
+
+            btn.Paint += (s, e) =>
+            {
+                using (GraphicsPath gp = new GraphicsPath())
+                {
+                    int r = 8;
+                    gp.AddArc(0, 0, r, r, 180, 90);
+                    gp.AddArc(btn.Width - r, 0, r, r, 270, 90);
+                    gp.AddArc(btn.Width - r, btn.Height - r, r, r, 0, 90);
+                    gp.AddArc(0, btn.Height - r, r, r, 90, 90);
+                    gp.CloseAllFigures();
+                    btn.Region = new Region(gp);
+                }
+            };
+
             return btn;
         }
 
-        private void LoadReportData()
+        // =============================================
+        // HELPER: Create summary card
+        // =============================================
+        private Panel CreateSummaryCard(string title, string value, Color bgColor, Color hoverColor, out Label lblValue)
         {
-            // Dummy logic to simulate a database query
-            // SQL: SELECT order_id, date, total_amount, staff_name FROM sales WHERE date BETWEEN @from AND @to
+            Panel pnl = new Panel
+            {
+                Size = new Size(240, 65),
+                BackColor = bgColor,
+                Cursor = Cursors.Default
+            };
 
-            DataTable dt = new DataTable();
-            dt.Columns.Add("Order ID");
-            dt.Columns.Add("Date");
-            dt.Columns.Add("Customer/Staff");
-            dt.Columns.Add("Total Amount");
+            pnl.Paint += (s, e) =>
+            {
+                using (GraphicsPath gp = new GraphicsPath())
+                {
+                    int r = 12;
+                    gp.AddArc(0, 0, r, r, 180, 90);
+                    gp.AddArc(pnl.Width - r, 0, r, r, 270, 90);
+                    gp.AddArc(pnl.Width - r, pnl.Height - r, r, r, 0, 90);
+                    gp.AddArc(0, pnl.Height - r, r, r, 90, 90);
+                    gp.CloseAllFigures();
+                    pnl.Region = new Region(gp);
+                }
+            };
 
-            // Example Data
-            dt.Rows.Add("ORD-001", DateTime.Now.ToShortDateString(), "Admin", "$150.00");
-            dt.Rows.Add("ORD-002", DateTime.Now.ToShortDateString(), "Cashier_John", "$45.50");
+            Label lblCardTitle = new Label
+            {
+                Text = title,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                ForeColor = AppColorConfig.White,
+                Dock = DockStyle.Top,
+                Height = 28,
+                TextAlign = ContentAlignment.MiddleCenter
+            };
 
-            dgvReports.DataSource = dt;
+            lblValue = new Label
+            {
+                Text = value,
+                Font = new Font("Segoe UI", 13, FontStyle.Bold),
+                ForeColor = AppColorConfig.White,
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter
+            };
 
-            // Update Summary
-            UpdateSummary(195.50, 2);
-        }
+            pnl.Controls.Add(lblValue);
+            pnl.Controls.Add(lblCardTitle);
 
-        private void UpdateSummary(double revenue, int orders)
-        {
-            lblTotalRevenue.Text = $"Total Revenue: ${revenue:N2}";
-            lblTotalOrders.Text = $"Total Orders: {orders}";
+            return pnl;
         }
     }
 }
