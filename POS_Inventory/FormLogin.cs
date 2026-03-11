@@ -26,10 +26,10 @@ namespace POS_Inventory
         public FormLogin()
         {
             InitializeComponent();
-            formLogindesign();
+            FormLoginDesign();
         }
 
-        public void formLogindesign()
+        public void FormLoginDesign()
         {
             this.Size = new Size(400, 700);
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -50,10 +50,10 @@ namespace POS_Inventory
             lblTitle.TextAlign = ContentAlignment.MiddleCenter;
             cardPanel.Controls.Add(lblTitle);
 
-            txtUsername = CreateModernTextBox("username or Email", 120);
+            txtUsername = CreateModernTextBox("Username or Email", 120);
             cardPanel.Controls.Add(txtUsername);
 
-            txtPassword = CreateModernTextBox("password", 210);
+            txtPassword = CreateModernTextBox("Password", 210);
             txtPassword.UseSystemPasswordChar = true;
             txtPassword.Size = new Size(200, 30);
             cardPanel.Controls.Add(txtPassword);
