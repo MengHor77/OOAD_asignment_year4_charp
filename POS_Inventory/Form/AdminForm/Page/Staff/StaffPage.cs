@@ -31,8 +31,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Staff
             // --- 1. Header Title ---
             Label lblTitle = new Label
             {
-                Text = "Staff Management",
-                Font = new Font("Segoe UI", 16, FontStyle.Regular),
+                Text = "📊 Staff Management",
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
                 ForeColor = AppColorConfig.TextDark,
                 Location = new Point(20, 20),
                 AutoSize = true

@@ -30,8 +30,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             // --- Header Label ---
             Label lblTitle = new Label
             {
-                Text = "Product Management",
-                Font = new Font("Segoe UI", 16, FontStyle.Regular),
+                Text = "📊 Product Management",
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
                 ForeColor = AppColorConfig.TextDark,
                 Location = new Point(20, 20),
                 AutoSize = true

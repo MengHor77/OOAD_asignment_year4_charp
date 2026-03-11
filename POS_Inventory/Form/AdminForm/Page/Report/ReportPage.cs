@@ -31,18 +31,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
             this.BackColor = AppColorConfig.ContentBackground;
             this.Padding = new Padding(20);
 
-            // =============================================
-            // 1. PAGE TITLE
-            // =============================================
-            lblTitle = new Label
-            {
-                Text = "📊  Sales Report",
-                Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                ForeColor = AppColorConfig.TextDark,
-                AutoSize = true,
-                Location = new Point(20, 15)
-            };
-            this.Controls.Add(lblTitle);
+            
 
             // =============================================
             // 2. FILTER PANEL
@@ -197,16 +186,37 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
             };
 
             // =============================================
-            // 5. ADD ALL TO FORM
+            // 5. ADD ALL TO FORM (ORDER MATTERS FOR DOCKING)
             // =============================================
-            this.Controls.Add(dgvReports);
-            this.Controls.Add(pnlSummary);
-            this.Controls.Add(pnlFilter);
-            this.Controls.Add(lblTitle);
 
-            this.Padding = new Padding(20, 60, 20, 10);
+            // Title panel at very top
+            Panel pnlTitle = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 55,
+                BackColor = AppColorConfig.ContentBackground
+            };
+
+            lblTitle = new Label
+            {
+                Text = "📊  Report Management",
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                ForeColor = AppColorConfig.TextDark,
+                AutoSize = true,
+                Location = new Point(20, 12)
+            };
+
+            pnlTitle.Controls.Add(lblTitle);
+
+            // Add in reverse dock order: Fill first, then Bottom, then Top panels
+            this.Controls.Add(dgvReports);      // Fill
+            this.Controls.Add(pnlSummary);      // Bottom
+            this.Controls.Add(pnlFilter);       // Top (second)
+            this.Controls.Add(pnlTitle);        // Top (first — added last so it appears at very top)
+
+            this.Padding = new Padding(10, 10, 10, 10);
+
         }
-
         // =============================================
         // LOAD REAL DATA FROM DATABASE
         // =============================================

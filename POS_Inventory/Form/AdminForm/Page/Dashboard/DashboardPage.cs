@@ -23,11 +23,11 @@ namespace POS_Inventory.Form.AdminForm.Page.Dashboard
             this.BackColor = Color.White;
 
             lblTitle = new Label();
-            lblTitle.Text = "Dashboard Management";
-            lblTitle.Font = new Font("Segoe UI", 14, FontStyle.Bold);
+            lblTitle.Text = "📊 Dashboard Management";
+            lblTitle.Font = new Font("Segoe UI", 16, FontStyle.Bold);
             lblTitle.ForeColor = AppColorConfig.TextDark;
             lblTitle.AutoSize = true;
-            lblTitle.Location = new Point(20, 10);
+            lblTitle.Location = new Point(20, 12);
             this.Controls.Add(lblTitle);
 
             flowCards = new FlowLayoutPanel();
