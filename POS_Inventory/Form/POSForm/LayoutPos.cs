@@ -412,6 +412,15 @@ namespace POS_Inventory.Form.POSForm
 
         private void BtnSubmit_Click(object sender, EventArgs e)
         {
+            if (flowItemsOrder.Controls.Count == 0)
+            {
+                MessageBox.Show("No items in order yet! Please add products before submitting.",
+                                "No Items",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                return;
+            }
+
             decimal total = 0;
 
             DataTable dt = _orderRepo.GetItems();

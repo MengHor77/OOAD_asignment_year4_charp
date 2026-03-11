@@ -21,7 +21,7 @@ namespace POS_Inventory
         private Label lblTitle;
         private Panel cardPanel;
 
-        UserConfig userConfig = new UserConfig();
+     // UserConfig userConfig = new UserConfig();
 
         public FormLogin()
         {
