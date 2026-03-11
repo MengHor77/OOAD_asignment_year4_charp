@@ -69,10 +69,30 @@ namespace POS_Inventory.Form.POSForm
             pnlTopNav.Controls.Add(lblSystemName);
 
             pnlSearchContainer = new Panel {
-                Size = new Size(350, 40),
+                Size = new Size(500, 40),
                 Location = new Point(260, 15),
                 BackColor = Color.FromArgb(240, 240, 240)
             };
+
+            pnlSearchContainer.Paint += (s, e) =>
+            {
+                using (System.Drawing.Drawing2D.GraphicsPath gp = new System.Drawing.Drawing2D.GraphicsPath())
+                {
+                    int radius = 20;
+                    gp.AddArc(0, 0, radius, radius, 180, 90);
+                    gp.AddArc(pnlSearchContainer.Width - radius, 0, radius, radius, 270, 90);
+                    gp.AddArc(pnlSearchContainer.Width - radius, pnlSearchContainer.Height - radius, radius, radius, 0, 90);
+                    gp.AddArc(0, pnlSearchContainer.Height - radius, radius, radius, 90, 90);
+                    gp.CloseAllFigures();
+                    pnlSearchContainer.Region = new Region(gp);
+                    e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    using (System.Drawing.Drawing2D.GraphicsPath border = (System.Drawing.Drawing2D.GraphicsPath)gp.Clone())
+                    {
+                        e.Graphics.DrawPath(new Pen(Color.FromArgb(200, 200, 200), 1), border);
+                    }
+                }
+            };
+
             pnlTopNav.Controls.Add(pnlSearchContainer);
 
             // Inside LayoutDesign, replace your txtSearch setup with this:
@@ -82,7 +102,7 @@ namespace POS_Inventory.Form.POSForm
                 ForeColor = Color.Gray, // Set initial color here
                 BorderStyle = BorderStyle.None,
                 BackColor = Color.FromArgb(240, 240, 240),
-                Size = new Size(300, 30),
+                Size = new Size(450, 30),
                 Location = new Point(35, 10)
             };
 
