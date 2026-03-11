@@ -69,7 +69,7 @@ namespace POS_Inventory.Form.AdminForm
             // --- 2. HEADER PANEL (Docked Top) ---
             headerPanel = new Panel();
             headerPanel.Dock = DockStyle.Top;
-            headerPanel.Height = 50;
+            headerPanel.Height = 55;
             headerPanel.BackColor = AppColorConfig.HeaderPink;
 
             // --- 3. MAIN CONTENT PANEL ---
@@ -107,9 +107,12 @@ namespace POS_Inventory.Form.AdminForm
             btnMenu.MouseLeave += (s, e) => btnMenu.BackColor = Color.Transparent;
             headerPanel.Controls.Add(btnMenu);
 
+            string displayName = !string.IsNullOrEmpty(UserSession.Username)
+                       ? UserSession.Username : "Admin";
+
             Label lblWelcome = new Label()
             {
-                Text = "Welcome Admin!",
+                Text = "Welcome, " + displayName + "!",
                 ForeColor = AppColorConfig.TextDark,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Location = new Point(60, 15),
@@ -117,9 +120,43 @@ namespace POS_Inventory.Form.AdminForm
             };
             headerPanel.Controls.Add(lblWelcome);
 
-            AddHeaderLink("Logout", 60);
-            AddHeaderLink("profile", 130);
+            // Logout as Button with hover
+            Button btnLogout = new Button()
+            {
+                Text = "Logout",
+                Size = new Size(75, 30),
+                FlatStyle = FlatStyle.Flat,
+                BackColor = AppColorConfig.SidebarRed,
+                ForeColor = AppColorConfig.White,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                Cursor = Cursors.Hand,
+                Anchor = AnchorStyles.Right | AnchorStyles.Top
+            };
+            btnLogout.FlatAppearance.BorderSize = 0;
+            btnLogout.Paint += (s, e) =>
+            {
+                using (System.Drawing.Drawing2D.GraphicsPath gp = new System.Drawing.Drawing2D.GraphicsPath())
+                {
+                    int r = 8;
+                    gp.AddArc(0, 0, r, r, 180, 90);
+                    gp.AddArc(btnLogout.Width - r, 0, r, r, 270, 90);
+                    gp.AddArc(btnLogout.Width - r, btnLogout.Height - r, r, r, 0, 90);
+                    gp.AddArc(0, btnLogout.Height - r, r, r, 90, 90);
+                    gp.CloseAllFigures();
+                    btnLogout.Region = new Region(gp);
+                }
+            };
+            btnLogout.Location = new Point(headerPanel.Width - 90, 10);
+            btnLogout.MouseEnter += (s, e) => btnLogout.BackColor = AppColorConfig.ErrorRed;
+            btnLogout.MouseLeave += (s, e) => btnLogout.BackColor = AppColorConfig.SidebarRed;
+            btnLogout.Click += (s, e) => PerformLogout();
+            headerPanel.Controls.Add(btnLogout);
 
+            // Reposition logout button on header resize
+            headerPanel.Resize += (s, e) =>
+            {
+                btnLogout.Location = new Point(headerPanel.Width - 90, 10);
+            };
             // Ensure panels are properly layered after form loads
             this.Load += (s, e) =>
             {
