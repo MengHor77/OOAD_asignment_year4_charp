@@ -157,7 +157,7 @@ namespace POS_Inventory.Form.POSForm
                 Dock = DockStyle.Right,
                 Width = 370,
                 BackColor = AppColorConfig.GrayLight,
-                Padding = new Padding(10, 0, 0, 20) //left, top , right , buttom 
+                Padding = new Padding(10, 10, 0, 20) //left, top , right , buttom 
             };
 
             lblOrderTitle = new Label { 
