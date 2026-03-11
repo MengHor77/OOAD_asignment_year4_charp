@@ -191,5 +191,21 @@ namespace POS_Inventory.Config
                 }
             }
         }
+
+         public int GetTotalLowStock()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "SELECT COUNT(*) FROM products WHERE stock_qty <= 5";
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+                catch { return 0; }
+            }
+        }
+
     }
 }

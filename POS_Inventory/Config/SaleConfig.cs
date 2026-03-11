@@ -47,5 +47,39 @@ namespace POS_Inventory.Config
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
+
+
+        public decimal GetTotalAmountSaleToday()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "SELECT COALESCE(SUM(total), 0) FROM sales WHERE DATE(created_at) = CURDATE()";
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    return Convert.ToDecimal(cmd.ExecuteScalar());
+                }
+                catch { return 0; }
+            }
+        }
+
+        public int GetTotalSaleCountToday()
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "SELECT COUNT(*) FROM sales WHERE DATE(created_at) = CURDATE()";
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                }
+                catch { return 0; }
+            }
+        }
     }
 }
+
+    
+

@@ -36,40 +36,39 @@ namespace POS_Inventory.Form.AdminForm.Page.Dashboard
             flowCards.Location = new Point(20, 50);
             flowCards.Height = 200;
             flowCards.BackColor = Color.Transparent;
-            flowCards.Padding = new Padding(0, 20, 0, 0); // left, top, right, bottom
-
-            // Flex behavior
             flowCards.FlowDirection = FlowDirection.LeftToRight;
-            flowCards.WrapContents = true;                // flex to next row if needed
-            flowCards.AutoSize = true;                    // grow with content
+            flowCards.WrapContents = true;
+            flowCards.AutoSize = true;
             flowCards.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             flowCards.Padding = new Padding(0);
-
-            // Anchor to left and top to expand properly
             flowCards.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-            // Add directly to the UserControl
             this.Controls.Add(flowCards);
         }
+
         private void LoadDashboardCards()
         {
             flowCards.Controls.Clear();
 
             UserConfig userConfig = new UserConfig();
+            SaleConfig saleConfig = new SaleConfig();
+            ProductConfig productConfig = new ProductConfig();
 
             int totalCashier = userConfig.GetTotalCashier();
             int totalAdmin = userConfig.GetTotalAdmin();
+            int totalLowStock = productConfig.GetTotalLowStock();
+            decimal totalAmountSaleToday = saleConfig.GetTotalAmountSaleToday();
+            int totalSaleCountToday = saleConfig.GetTotalSaleCountToday();
 
-            Panel cardCashier = CreateDashboardCard("Total Cashier", "Amount: " + totalCashier, AppColorConfig.CardStaff);
-            Panel cardAdmin = CreateDashboardCard("Total Admin", "Amount: " + totalAdmin, AppColorConfig.CardStaff);
-            Panel cardProduct = CreateDashboardCard("Quick Product", "", AppColorConfig.CardProduct);
-            Panel cardSales = CreateDashboardCard("Sale Today", "", Color.LightBlue);
+            Panel cardCashier = CreateDashboardCard("Total Cashier", "Amount: " + totalCashier.ToString(), AppColorConfig.CardStaff);
+            Panel cardAdmin = CreateDashboardCard("Total Admin", "Amount: " + totalAdmin.ToString(), AppColorConfig.CardStaff);
+            Panel cardLowStock = CreateDashboardCard("Alert Low Stock", "Items: " + totalLowStock.ToString(), Color.LightBlue);
+            Panel cardTotalAmountSaleToday = CreateDashboardCard("Total Sale Amount Today", "$" + totalAmountSaleToday.ToString("0.00"), AppColorConfig.CardProduct);
 
-            Panel[] cards = { cardCashier, cardAdmin, cardProduct, cardSales };
+            Panel[] cards = { cardCashier, cardAdmin, cardLowStock, cardTotalAmountSaleToday };
 
             flowCards.Controls.AddRange(cards);
 
-            // Adjust flowCards width to fit all cards
             int totalWidth = 0;
             foreach (Panel card in cards)
                 totalWidth += card.Width + card.Margin.Right;
@@ -82,9 +81,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Dashboard
             Panel pnl = new Panel();
             pnl.Size = new Size(250, 120);
             pnl.BackColor = bgColor;
-            pnl.Margin = new Padding(0, 0, 15, 0);
             pnl.BorderStyle = BorderStyle.FixedSingle;
-            pnl.Margin = new Padding(0, 20, 15, 0); // left, top, right, bottom
+            pnl.Margin = new Padding(0, 20, 15, 0);
 
             Label lblTitle = new Label();
             lblTitle.Text = title;
