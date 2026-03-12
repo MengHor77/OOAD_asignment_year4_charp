@@ -204,7 +204,6 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
                 ForeColor = AppColorConfig.TextDark,
                 AutoSize = true,
                 Location = new Point(0, 20),
-                Padding =new Padding(0,0,0,20),
             };
 
             pnlTitle.Controls.Add(lblTitle);

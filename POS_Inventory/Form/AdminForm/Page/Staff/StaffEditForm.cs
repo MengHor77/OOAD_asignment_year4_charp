@@ -16,6 +16,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Staff
         private TextBox txtUsername;
         private TextBox txtEmail;
         private TextBox txtPassword;
+        private Button btnTogglePassword;
         private Button btnSave;
         private Button btnCancel;
 
@@ -53,8 +54,29 @@ namespace POS_Inventory.Form.AdminForm.Page.Staff
             txtEmail = new TextBox { Location = new Point(20, 175), Width = 340, Font = new Font("Segoe UI", 11) };
 
             // Password (Required by your UpdateUser method)
-            Label lblPass = new Label { Text = "New Password (Required):", Location = new Point(20, 230), AutoSize = true };
-            txtPassword = new TextBox { Location = new Point(20, 255), Width = 340, Font = new Font("Segoe UI", 11), UseSystemPasswordChar = true };
+            Label lblPass = new Label {
+                Text = "New Password (Required):",
+                Location = new Point(20, 230),
+                AutoSize = true };
+
+            txtPassword = new TextBox
+            {
+                Location = new Point(20, 255),
+                Width = 280,
+                Font = new Font("Segoe UI", 11),
+                UseSystemPasswordChar = true
+            };
+
+            btnTogglePassword = new Button
+            {
+                Text = "Show",
+                Location = new Point(310, 255), // move a bit to the left if needed
+                Size = new Size(60, 32),        // increase width
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10, FontStyle.Regular)
+            };
+
+            btnTogglePassword.Click += BtnTogglePassword_Click;
 
             // Save Button
             btnSave = new Button
@@ -73,7 +95,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Staff
             btnCancel = new Button { Text = "Cancel", Size = new Size(160, 45), Location = new Point(200, 310), FlatStyle = FlatStyle.Flat, BackColor = Color.Gainsboro };
             btnCancel.Click += (s, e) => this.Close();
 
-            this.Controls.AddRange(new Control[] { lblHeader, lblUser, txtUsername, lblEmail, txtEmail, lblPass, txtPassword, btnSave, btnCancel });
+            this.Controls.AddRange(new Control[] { lblHeader, lblUser, txtUsername, lblEmail, txtEmail, lblPass, txtPassword, btnTogglePassword, btnSave, btnCancel });
         }
 
         private void BtnSave_Click(object sender, EventArgs e)
@@ -100,6 +122,20 @@ namespace POS_Inventory.Form.AdminForm.Page.Staff
             else
             {
                 MessageBox.Show("Update failed. Make sure the username is unique.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnTogglePassword_Click(object sender, EventArgs e)
+        {
+            if (txtPassword.UseSystemPasswordChar)
+            {
+                txtPassword.UseSystemPasswordChar = false;
+                btnTogglePassword.Text = "Hide";
+            }
+            else
+            {
+                txtPassword.UseSystemPasswordChar = true;
+                btnTogglePassword.Text = "Show";
             }
         }
     }
