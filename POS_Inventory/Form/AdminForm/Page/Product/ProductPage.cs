@@ -3,6 +3,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using POS_Inventory.Config;
+using POS_Inventory.Component; // Make sure Pagination class is here
 
 namespace POS_Inventory.Form.AdminForm.Page.Product
 {
@@ -13,16 +14,26 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
         private ProductConfig productConfig;
         private Panel pnlTableContainer;
         private Panel pnlPagination;
+        private Pagination pagination;
 
         public ProductPage()
         {
             productConfig = new ProductConfig();
             SetupLayout();
-            LoadData();
+
+            this.Load += (s, e) =>
+            {
+                pnlTableContainer.Width = this.ClientSize.Width - 40;
+            };
+
+
+            LoadPageData(1); // Load first page on initialization
+
         }
 
         private void SetupLayout()
         {
+            // --- UserControl Setup ---
             this.Dock = DockStyle.Fill;
             this.BackColor = AppColorConfig.ContentBackground;
             this.Padding = new Padding(20);
@@ -55,7 +66,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             pnlTableContainer = new Panel
             {
                 Location = new Point(20, 130),
-                Size = new Size(this.Width - 40, 400),
+                Height = 400,
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 BackColor = Color.Transparent
             };
@@ -97,61 +108,70 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
 
             dgvProduct.CellContentClick += DgvProduct_CellContentClick;
 
-            // --- Pagination Placeholder ---
+            pnlTableContainer.Controls.Add(dgvProduct);
+
+            // --- Pagination Panel ---
             pnlPagination = new Panel
             {
                 Size = new Size(210, 50),
-                BackColor = AppColorConfig.White,
-                Location = new Point(pnlTableContainer.Right - 200, pnlTableContainer.Bottom + 10),
-                Anchor = AnchorStyles.Top | AnchorStyles.Right
+                BackColor = AppColorConfig.White
             };
-            AddPaginationButtons();
 
-            this.Controls.Add(pnlPagination);
-            pnlTableContainer.Controls.Add(dgvProduct);
-            this.Controls.Add(pnlTableContainer);
-            this.Controls.Add(btnAdd);
-            this.Controls.Add(lblTitle);
-        }
-
-        private void AddPaginationButtons()
-        {
-            string[] buttons = { "<", "1", "2", "3", ">" };
-            int x = 5;
-            foreach (var b in buttons)
+            // Align pagination like Category page
+            void UpdatePaginationPosition()
             {
-                Button btn = new Button
-                {
-                    Text = b,
-                    Size = new Size(35, 35),
-                    Location = new Point(x, 7),
-                    FlatStyle = FlatStyle.Flat,
-                    BackColor = (b == "2") ? Color.Orange : AppColorConfig.White,
-                    Font = new Font("Segoe UI", 9, FontStyle.Bold)
-                };
-                btn.FlatAppearance.BorderColor = Color.LightGray;
-                pnlPagination.Controls.Add(btn);
-                x += 40;
+                pnlPagination.Left = pnlTableContainer.Left + pnlTableContainer.Width - pnlPagination.Width;
+                pnlPagination.Top = pnlTableContainer.Bottom + 10;
             }
+
+
+            // Update on resize
+            this.Resize += (s, e) =>
+            {
+                pnlTableContainer.Width = this.ClientSize.Width - 40;
+                UpdatePaginationPosition();
+            };
+            // --- Add Controls ---
+            this.Controls.Add(lblTitle);
+            this.Controls.Add(btnAdd);
+            this.Controls.Add(pnlTableContainer);
+            this.Controls.Add(pnlPagination);
+
+            // Initial position
+            UpdatePaginationPosition();
+
+
+            // --- Pagination Object ---
+            pagination = new Pagination(pnlPagination, 10, LoadPageData); // page size = 10
+        }        // --- Load one page of data ---
+        private void LoadPageData(int pageNumber)
+        {
+            DataTable dtAll = productConfig.GetAllProducts();
+            int pageSize = pagination.GetPageSize();
+            int startIndex = (pageNumber - 1) * pageSize;
+            int endIndex = Math.Min(startIndex + pageSize, dtAll.Rows.Count);
+
+            DataTable dtPage = dtAll.Clone();
+            for (int i = startIndex; i < endIndex; i++)
+                dtPage.ImportRow(dtAll.Rows[i]);
+
+            dgvProduct.DataSource = dtPage;
+
+            AddActionColumns();
+            pagination.Bind(dtAll); // refresh pagination buttons
         }
 
-        private void LoadData()
+        private void AddActionColumns()
         {
-            DataTable dt = productConfig.GetAllProducts();
-            dgvProduct.DataSource = dt;
-
-            // Remove existing Action columns to avoid duplication
             if (dgvProduct.Columns.Contains("Edit")) dgvProduct.Columns.Remove("Edit");
             if (dgvProduct.Columns.Contains("Delete")) dgvProduct.Columns.Remove("Delete");
 
-            // Hide the ID columns we don't want the user to see
             if (dgvProduct.Columns.Contains("category_id")) dgvProduct.Columns["category_id"].Visible = false;
 
-            // Add Action Buttons
-            DataGridViewButtonColumn btnEdit = new DataGridViewButtonColumn
+            var btnEdit = new DataGridViewButtonColumn
             {
                 Name = "Edit",
-                HeaderText = "action",
+                HeaderText = "Action",
                 Text = "Edit",
                 UseColumnTextForButtonValue = true,
                 FlatStyle = FlatStyle.Flat,
@@ -161,11 +181,11 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             btnEdit.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
             dgvProduct.Columns.Add(btnEdit);
 
-            DataGridViewButtonColumn btnDelete = new DataGridViewButtonColumn
+            var btnDelete = new DataGridViewButtonColumn
             {
                 Name = "Delete",
-                HeaderText = "action",
-                Text = "delete",
+                HeaderText = "Action",
+                Text = "Delete",
                 UseColumnTextForButtonValue = true,
                 FlatStyle = FlatStyle.Flat,
                 Width = 60
@@ -174,7 +194,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             btnDelete.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
             dgvProduct.Columns.Add(btnDelete);
 
-            // Rename Headers for Display
+            // Rename headers
             if (dgvProduct.Columns.Contains("id")) dgvProduct.Columns["id"].HeaderText = "Id";
             if (dgvProduct.Columns.Contains("product_name")) dgvProduct.Columns["product_name"].HeaderText = "Product Name";
             if (dgvProduct.Columns.Contains("category_name")) dgvProduct.Columns["category_name"].HeaderText = "Category";
@@ -191,14 +211,14 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
             {
                 using (ProductForm form = new ProductForm(productConfig, id))
                 {
-                    if (form.ShowDialog() == DialogResult.OK) LoadData();
+                    if (form.ShowDialog() == DialogResult.OK) LoadPageData(pagination.GetCurrentPage());
                 }
             }
             else if (dgvProduct.Columns[e.ColumnIndex].Name == "Delete")
             {
                 if (MessageBox.Show("Delete this product?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    if (productConfig.DeleteProduct(id)) LoadData();
+                    if (productConfig.DeleteProduct(id)) LoadPageData(pagination.GetCurrentPage());
                 }
             }
         }
@@ -207,7 +227,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
         {
             using (ProductForm form = new ProductForm(productConfig))
             {
-                if (form.ShowDialog() == DialogResult.OK) LoadData();
+                if (form.ShowDialog() == DialogResult.OK) LoadPageData(pagination.GetCurrentPage());
             }
         }
     }

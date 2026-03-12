@@ -59,10 +59,12 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             pnlTableContainer = new Panel
             {
                 Location = new Point(20, 130),
-                Size = new Size(this.Width - 40, 400),
+                Height = 400,
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                 BackColor = Color.Transparent
             };
+
+            pnlTableContainer.Width = this.ClientSize.Width - 40;
 
             // --- DataGridView ---
             dgvCategory = new DataGridView
@@ -106,7 +108,6 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             {
                 Size = new Size(210, 50),
                 BackColor = AppColorConfig.White,
-                Location = new Point(20, 540), // fixed below table
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
 
@@ -116,10 +117,18 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             this.Controls.Add(btnAdd);
             this.Controls.Add(lblTitle);
             this.Controls.Add(pnlPagination);
-
+            UpdatePaginationPosition();
+            this.Resize += (s, e) => UpdatePaginationPosition();
             // --- Pagination Object (after pnlPagination is ready) ---
             pagination = new Pagination(pnlPagination, 10, LoadPageData);
         }
+
+        void UpdatePaginationPosition()
+        {
+            pnlPagination.Left = pnlTableContainer.Left + pnlTableContainer.Width - pnlPagination.Width;
+            pnlPagination.Top = pnlTableContainer.Bottom + 10;
+        }
+
         private void LoadPageData(int pageNumber)
         {
             DataTable dtAll = categoryConfig.GetAllCategories();
@@ -177,26 +186,6 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             if (dgvCategory.Columns.Contains("id")) dgvCategory.Columns["id"].HeaderText = "Id";
             if (dgvCategory.Columns.Contains("category_name")) dgvCategory.Columns["category_name"].HeaderText = "Category Name";
             if (dgvCategory.Columns.Contains("description")) dgvCategory.Columns["description"].HeaderText = "Description";
-        }
-        private void AddPaginationButtons()
-        {
-            string[] buttons = { "<", "1", "2", "3", ">" };
-            int x = 5;
-            foreach (var b in buttons)
-            {
-                Button btn = new Button
-                {
-                    Text = b,
-                    Size = new Size(35, 35),
-                    Location = new Point(x, 7),
-                    FlatStyle = FlatStyle.Flat,
-                    BackColor = (b == "2") ? Color.Orange : AppColorConfig.White,
-                    Font = new Font("Segoe UI", 9, FontStyle.Bold)
-                };
-                btn.FlatAppearance.BorderColor = Color.LightGray;
-                pnlPagination.Controls.Add(btn);
-                x += 40;
-            }
         }
 
 
