@@ -70,8 +70,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Staff
             btnTogglePassword = new Button
             {
                 Text = "Show",
-                Location = new Point(310, 255), // move a bit to the left if needed
-                Size = new Size(60, 32),        // increase width
+                Location = new Point(310, 255), 
+                Size = new Size(60, 32),     
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 10, FontStyle.Regular)
             };

@@ -1,9 +1,11 @@
-﻿using System;
+﻿using POS_Inventory.Config;
+using System;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using POS_Inventory.Config;
 
 namespace POS_Inventory.Form.AdminForm.Page.Report
 {
@@ -99,9 +101,89 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
             btnPrint = CreateBtn("🖨️  Print", AppColorConfig.LightBlue, 630, 40);
 
             btnFilter.Click += (s, e) => LoadReportData();
-            btnExport.Click += (s, e) => MessageBox.Show("Exporting to Excel...", "Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            btnPrint.Click += (s, e) => MessageBox.Show("Printing PDF...", "Print", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            btnExport.Click += (s, e) =>
+            {
+                if (dgvReports.Rows.Count == 0)
+                {
+                    MessageBox.Show("No data to export!", "Export", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
+                using (SaveFileDialog sfd = new SaveFileDialog())
+                {
+                    sfd.Filter = "Text File|*.txt";
+                    sfd.FileName = $"Report_{dtFrom.Value:yyyyMMdd}_to_{dtTo.Value:yyyyMMdd}.txt";
+
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        try
+                        {
+                            using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                            {
+                                // 1. Calculate max length for each column
+                                int[] maxLengths = new int[dgvReports.Columns.Count];
+
+                                // Check headers first
+                                for (int c = 0; c < dgvReports.Columns.Count; c++)
+                                    maxLengths[c] = dgvReports.Columns[c].HeaderText.Length;
+
+                                // Check rows
+                                foreach (DataGridViewRow row in dgvReports.Rows)
+                                {
+                                    if (!row.IsNewRow)
+                                    {
+                                        for (int c = 0; c < dgvReports.Columns.Count; c++)
+                                        {
+                                            string cellText = row.Cells[c].Value?.ToString() ?? "";
+                                            if (cellText.Length > maxLengths[c])
+                                                maxLengths[c] = cellText.Length;
+                                        }
+                                    }
+                                }
+
+                                // 2. Write headers
+                                for (int c = 0; c < dgvReports.Columns.Count; c++)
+                                {
+                                    sw.Write(dgvReports.Columns[c].HeaderText.PadRight(maxLengths[c] + 2));
+                                }
+                                sw.WriteLine();
+
+                                // 3. Write separator line
+                                for (int c = 0; c < dgvReports.Columns.Count; c++)
+                                {
+                                    sw.Write(new string('-', maxLengths[c]) + "  ");
+                                }
+                                sw.WriteLine();
+
+                                // 4. Write rows
+                                foreach (DataGridViewRow row in dgvReports.Rows)
+                                {
+                                    if (!row.IsNewRow)
+                                    {
+                                        for (int c = 0; c < dgvReports.Columns.Count; c++)
+                                        {
+                                            string cellText = row.Cells[c].Value?.ToString() ?? "";
+                                            sw.Write(cellText.PadRight(maxLengths[c] + 2));
+                                        }
+                                        sw.WriteLine();
+                                    }
+                                }
+
+                                // Optional: add summary at bottom
+                                sw.WriteLine();
+                                sw.WriteLine($"Total Orders: {lblTotalOrders.Text}");
+                                sw.WriteLine($"Total Revenue: {lblTotalRevenue.Text}");
+                            }
+
+                            MessageBox.Show("Report exported successfully!", "Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Error exporting report:\n" + ex.Message, "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            };
             pnlFilter.Controls.AddRange(new Control[] { lblFrom, dtFrom, lblTo, dtTo, btnFilter, btnExport, btnPrint });
 
             // =============================================
