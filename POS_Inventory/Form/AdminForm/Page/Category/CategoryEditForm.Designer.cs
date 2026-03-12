@@ -1,6 +1,6 @@
-﻿namespace POS_Inventory.Form.AdminForm.Page.Product
+﻿namespace POS_Inventory.Form.AdminForm.Page.Category
 {
-    partial class ProductForm
+    partial class CategoryEditForm
     {
         /// <summary>
         /// Required designer variable.
@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "ProductForm";
+            this.Text = "CategoryForm";
         }
 
         #endregion

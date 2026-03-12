@@ -6,14 +6,14 @@ using POS_Inventory.Config;
 
 namespace POS_Inventory.Form.AdminForm.Page.Category
 {
-    public partial class CategoryForm : System.Windows.Forms.Form
+    public partial class CategoryEditForm : System.Windows.Forms.Form
     {
         private TextBox txtName, txtDescription;
         private Button btnSave, btnCancel;
         private CategoryConfig categoryConfig;
         private int categoryId = -1;
 
-        public CategoryForm(CategoryConfig config, int id = -1)
+        public CategoryEditForm(CategoryConfig config, int id = -1)
         {
             categoryConfig = config;
             categoryId = id;

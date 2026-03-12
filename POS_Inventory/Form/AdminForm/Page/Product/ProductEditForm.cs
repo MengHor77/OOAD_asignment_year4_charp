@@ -6,7 +6,7 @@ using POS_Inventory.Config;
 
 namespace POS_Inventory.Form.AdminForm.Page.Product
 {
-    public partial class ProductForm : System.Windows.Forms.Form
+    public partial class ProductEditForm : System.Windows.Forms.Form
     {
         private readonly ProductConfig _productConfig;
         private readonly int _productId;
@@ -14,7 +14,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
         private ComboBox cmbCategory;
         private Button btnSave, btnCancel;
 
-        public ProductForm(ProductConfig config, int id = -1)
+        public ProductEditForm(ProductConfig config, int id = -1)
         {
             _productConfig = config;
             _productId = id;

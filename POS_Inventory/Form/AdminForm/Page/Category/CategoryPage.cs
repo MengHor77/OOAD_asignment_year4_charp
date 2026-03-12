@@ -196,7 +196,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
 
             if (dgvCategory.Columns[e.ColumnIndex].Name == "Edit")
             {
-                using (CategoryForm form = new CategoryForm(categoryConfig, id))
+                using (CategoryEditForm form = new CategoryEditForm(categoryConfig, id))
                 {
                     form.ShowDialog();
                     LoadData();
@@ -213,7 +213,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
         }
         private void BtnAdd_Click(object sender, EventArgs e)
         {
-            using (CategoryForm form = new CategoryForm(categoryConfig))
+            using (CategoryEditForm form = new CategoryEditForm(categoryConfig))
             {
                 form.ShowDialog();
                 LoadData();
