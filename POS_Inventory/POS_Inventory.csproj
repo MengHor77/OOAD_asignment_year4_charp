@@ -104,6 +104,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Component\Pagination.cs" />
     <Compile Include="Config\AppColorConfig.cs" />
     <Compile Include="Config\CategoryConfig.cs" />
     <Compile Include="Config\ItemOrderConfig.cs" />

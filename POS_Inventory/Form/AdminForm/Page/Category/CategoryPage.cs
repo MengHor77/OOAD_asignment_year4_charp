@@ -3,6 +3,8 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using POS_Inventory.Config;
+using POS_Inventory.Component;
+
 
 namespace POS_Inventory.Form.AdminForm.Page.Category
 {
@@ -13,6 +15,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
         private CategoryConfig categoryConfig;
         private Panel pnlTableContainer;
         private Panel pnlPagination;
+        private Pagination pagination;
 
         public CategoryPage()
         {
@@ -23,6 +26,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
 
         private void SetupLayout()
         {
+            // --- UserControl Setup ---
             this.Dock = DockStyle.Fill;
             this.BackColor = AppColorConfig.ContentBackground;
             this.Padding = new Padding(20);
@@ -37,11 +41,11 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
                 AutoSize = true
             };
 
-            // --- Add Button (Rounded style) ---
+            // --- Add Button ---
             btnAdd = new Button
             {
                 Text = "Add new category",
-                BackColor = AppColorConfig.BrandBlue, 
+                BackColor = AppColorConfig.BrandBlue,
                 ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
                 Size = new Size(150, 40),
@@ -51,7 +55,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             btnAdd.FlatAppearance.BorderSize = 0;
             btnAdd.Click += BtnAdd_Click;
 
-            // --- Table Container (To provide margins) ---
+            // --- Table Container ---
             pnlTableContainer = new Panel
             {
                 Location = new Point(20, 130),
@@ -60,7 +64,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
                 BackColor = Color.Transparent
             };
 
-            // --- DataGridView Styling ---
+            // --- DataGridView ---
             dgvCategory = new DataGridView
             {
                 Dock = DockStyle.Fill,
@@ -77,16 +81,14 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
                 EnableHeadersVisualStyles = false
             };
 
-            // Header Style
             dgvCategory.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
-                BackColor = AppColorConfig.CardProduct, // Bright blue header
+                BackColor = AppColorConfig.CardProduct,
                 ForeColor = Color.Black,
                 Font = new Font("Segoe UI", 11, FontStyle.Regular),
                 Alignment = DataGridViewContentAlignment.MiddleCenter
             };
 
-            // Cell Style
             dgvCategory.DefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = AppColorConfig.White,
@@ -99,24 +101,83 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
 
             dgvCategory.CellContentClick += DgvCategory_CellContentClick;
 
-             // --- Pagination Placeholder ---
+            // --- Pagination Panel ---
             pnlPagination = new Panel
             {
-                 Size = new Size(210, 50),
-                BackColor = AppColorConfig.White,                // (Table Width - Pagination Width) aligns it to the right edge of the table
-                Location = new Point(pnlTableContainer.Right - 200, pnlTableContainer.Bottom + 10),
+                Size = new Size(210, 50),
+                BackColor = AppColorConfig.White,
+                Location = new Point(20, 540), // fixed below table
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
-            // Adding dummy pagination buttons to match photo
-            AddPaginationButtons();
 
-            this.Controls.Add(pnlPagination);
+            // --- Add Controls ---
             pnlTableContainer.Controls.Add(dgvCategory);
             this.Controls.Add(pnlTableContainer);
             this.Controls.Add(btnAdd);
             this.Controls.Add(lblTitle);
+            this.Controls.Add(pnlPagination);
+
+            // --- Pagination Object (after pnlPagination is ready) ---
+            pagination = new Pagination(pnlPagination, 10, LoadPageData);
+        }
+        private void LoadPageData(int pageNumber)
+        {
+            DataTable dtAll = categoryConfig.GetAllCategories();
+            int pageSize = pagination.GetPageSize();
+            int startIndex = (pageNumber - 1) * pageSize;
+            int endIndex = Math.Min(startIndex + pageSize, dtAll.Rows.Count);
+
+            DataTable dtPage = dtAll.Clone();
+            for (int i = startIndex; i < endIndex; i++)
+                dtPage.ImportRow(dtAll.Rows[i]);
+
+            dgvCategory.DataSource = dtPage;
+
+            AddActionColumns();          // add Edit/Delete buttons
+            pagination.Bind(dtAll);      // refresh pagination buttons
         }
 
+        private void LoadData()
+        {
+            LoadPageData(1); // just loads page 1 using pagination
+        }
+
+        private void AddActionColumns()
+        {
+            if (dgvCategory.Columns.Contains("Edit")) dgvCategory.Columns.Remove("Edit");
+            if (dgvCategory.Columns.Contains("Delete")) dgvCategory.Columns.Remove("Delete");
+
+            var btnEdit = new DataGridViewButtonColumn
+            {
+                Name = "Edit",
+                HeaderText = "Action",
+                Text = "Edit",
+                UseColumnTextForButtonValue = true,
+                FlatStyle = FlatStyle.Flat,
+                Width = 60
+            };
+            btnEdit.DefaultCellStyle.BackColor = AppColorConfig.CardStaff;
+            btnEdit.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
+            dgvCategory.Columns.Add(btnEdit);
+
+            var btnDelete = new DataGridViewButtonColumn
+            {
+                Name = "Delete",
+                HeaderText = "Action",
+                Text = "Delete",
+                UseColumnTextForButtonValue = true,
+                FlatStyle = FlatStyle.Flat,
+                Width = 60
+            };
+            btnDelete.DefaultCellStyle.BackColor = AppColorConfig.HeaderPink;
+            btnDelete.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
+            dgvCategory.Columns.Add(btnDelete);
+
+            // Fix column headers
+            if (dgvCategory.Columns.Contains("id")) dgvCategory.Columns["id"].HeaderText = "Id";
+            if (dgvCategory.Columns.Contains("category_name")) dgvCategory.Columns["category_name"].HeaderText = "Category Name";
+            if (dgvCategory.Columns.Contains("description")) dgvCategory.Columns["description"].HeaderText = "Description";
+        }
         private void AddPaginationButtons()
         {
             string[] buttons = { "<", "1", "2", "3", ">" };
@@ -138,48 +199,6 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             }
         }
 
-        private void LoadData()
-        {
-            DataTable dt = categoryConfig.GetAllCategories();
-            dgvCategory.DataSource = dt;
-
-            // Clear existing columns to re-add buttons at the end
-            if (dgvCategory.Columns.Contains("Edit")) dgvCategory.Columns.Remove("Edit");
-            if (dgvCategory.Columns.Contains("Delete")) dgvCategory.Columns.Remove("Delete");
-
-            // Edit Column
-            DataGridViewButtonColumn btnEdit = new DataGridViewButtonColumn
-            {
-                Name = "Edit",
-                HeaderText = "action",
-                Text = "Edit",
-                UseColumnTextForButtonValue = true,
-                FlatStyle = FlatStyle.Flat,
-                Width = 60
-            };
-            btnEdit.DefaultCellStyle.BackColor = AppColorConfig.CardStaff;  
-            btnEdit.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
-            dgvCategory.Columns.Add(btnEdit);
-
-            // Delete Column
-            DataGridViewButtonColumn btnDelete = new DataGridViewButtonColumn
-            {
-                Name = "Delete",
-                HeaderText = "action",
-                Text = "delete",
-                UseColumnTextForButtonValue = true,
-                FlatStyle = FlatStyle.Flat,
-                Width = 60
-            };
-            btnDelete.DefaultCellStyle.BackColor = AppColorConfig.HeaderPink;
-            btnDelete.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
-            dgvCategory.Columns.Add(btnDelete);
-
-            // Formatting column headers
-            if (dgvCategory.Columns.Contains("id")) dgvCategory.Columns["id"].HeaderText = "Id";
-            if (dgvCategory.Columns.Contains("category_name")) dgvCategory.Columns["category_name"].HeaderText = "Category Name";
-            if (dgvCategory.Columns.Contains("description")) dgvCategory.Columns["description"].HeaderText = "Desscription"; // Matching your typo
-        }
 
         private void DgvCategory_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
