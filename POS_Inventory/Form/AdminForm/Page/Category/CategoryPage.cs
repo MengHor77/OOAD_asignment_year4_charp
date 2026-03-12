@@ -119,7 +119,6 @@ namespace POS_Inventory.Form.AdminForm.Page.Category
             this.Controls.Add(pnlPagination);
             UpdatePaginationPosition();
             this.Resize += (s, e) => UpdatePaginationPosition();
-            // --- Pagination Object (after pnlPagination is ready) ---
             pagination = new Pagination(pnlPagination, 10, LoadPageData);
         }
 
