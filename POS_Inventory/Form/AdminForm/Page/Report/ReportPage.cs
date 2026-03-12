@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -100,6 +101,100 @@ namespace POS_Inventory.Form.AdminForm.Page.Report
             btnExport = CreateBtn("📥  Export", AppColorConfig.BtnSave, 510, 40);
             btnPrint = CreateBtn("🖨️  Print", AppColorConfig.LightBlue, 630, 40);
 
+
+            // --- inside SetupLayout(), after btnPrint creation ---
+            btnPrint.Click += (s, e) =>
+            {
+                if (dgvReports.Rows.Count == 0)
+                {
+                    MessageBox.Show("No data to print!", "Print", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                PrintDocument pd = new PrintDocument();
+                pd.DefaultPageSettings.Landscape = true; // optional for wide tables
+
+                int rowIndex = 0; // keeps track of which row to print
+                int y = 0;
+
+                Font fontHeader = new Font("Segoe UI", 10, FontStyle.Bold);
+                Font fontCell = new Font("Segoe UI", 10);
+
+                // dynamically calculate column offsets to match visible column widths
+                int[] colOffsets = new int[dgvReports.Columns.Count];
+                colOffsets[0] = 20;
+                for (int i = 1; i < dgvReports.Columns.Count; i++)
+                    colOffsets[i] = colOffsets[i - 1] + dgvReports.Columns[i - 1].Width + 10;
+
+                int headerHeight = dgvReports.ColumnHeadersHeight;
+                int rowHeight = dgvReports.RowTemplate.Height + 5;
+
+                pd.PrintPage += (sender, args) =>
+                {
+                    y = 20;
+
+                    // --- Title ---
+                    args.Graphics.DrawString("📊  Report", new Font("Segoe UI", 16, FontStyle.Bold),
+                        Brushes.Black, new PointF(20, y));
+                    y += 40;
+
+                    // --- Column Headers ---
+                    for (int c = 0; c < dgvReports.Columns.Count; c++)
+                    {
+                        args.Graphics.DrawString(dgvReports.Columns[c].HeaderText, fontHeader,
+                            Brushes.Black, colOffsets[c], y);
+                    }
+                    y += headerHeight;
+
+                    // --- Rows ---
+                    while (rowIndex < dgvReports.Rows.Count)
+                    {
+                        DataGridViewRow row = dgvReports.Rows[rowIndex];
+
+                        for (int c = 0; c < dgvReports.Columns.Count; c++)
+                        {
+                            string text = row.Cells[c].Value?.ToString() ?? "";
+                            args.Graphics.DrawString(text, fontCell, Brushes.Black, colOffsets[c], y);
+                        }
+
+                        y += rowHeight;
+
+                        // check if next row fits in page
+                        if (y + rowHeight > args.MarginBounds.Bottom - 50)
+                        {
+                            args.HasMorePages = true; // more pages needed
+                            return; // next page starts with same row
+                        }
+
+                        rowIndex++; // move to next row
+                    }
+
+                    // --- Summary ---
+                    y += 10;
+                    args.Graphics.DrawString($"Total Orders: {lblTotalOrders.Text}", fontHeader, Brushes.Black, 20, y);
+                    args.Graphics.DrawString($"Total Revenue: {lblTotalRevenue.Text}", fontHeader, Brushes.Black, 200, y);
+
+                    args.HasMorePages = false;
+                    rowIndex = 0; // reset for next print
+                };
+
+                // --- Show print preview ---
+                PrintPreviewDialog preview = new PrintPreviewDialog
+                {
+                    Document = pd,
+                    Width = 1000,
+                    Height = 700
+                };
+                preview.ShowDialog();
+            };
+            // --- helper to calculate column offset dynamically ---
+            int GetColumnOffset(int columnIndex)
+            {
+                int offset = 0;
+                for (int i = 0; i < columnIndex; i++)
+                    offset += dgvReports.Columns[i].Width + 10; // add some padding
+                return offset;
+            }
             btnFilter.Click += (s, e) => LoadReportData();
             btnExport.Click += (s, e) =>
             {
