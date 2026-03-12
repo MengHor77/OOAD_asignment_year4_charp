@@ -209,7 +209,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
 
             if (dgvProduct.Columns[e.ColumnIndex].Name == "Edit")
             {
-                using (ProductForm form = new ProductForm(productConfig, id))
+                using (ProductEditForm form = new ProductEditForm(productConfig, id))
                 {
                     if (form.ShowDialog() == DialogResult.OK) LoadPageData(pagination.GetCurrentPage());
                 }
@@ -225,7 +225,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Product
 
         private void BtnAdd_Click(object sender, EventArgs e)
         {
-            using (ProductForm form = new ProductForm(productConfig))
+            using (ProductEditForm form = new ProductEditForm(productConfig))
             {
                 if (form.ShowDialog() == DialogResult.OK) LoadPageData(pagination.GetCurrentPage());
             }

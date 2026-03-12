@@ -160,11 +160,11 @@
     <Compile Include="Form\AdminForm\Page\Inventory\InventoryPage.Designer.cs">
       <DependentUpon>InventoryPage.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form\AdminForm\Page\Product\ProductForm.cs">
+    <Compile Include="Form\AdminForm\Page\Product\ProductEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form\AdminForm\Page\Product\ProductForm.Designer.cs">
-      <DependentUpon>ProductForm.cs</DependentUpon>
+    <Compile Include="Form\AdminForm\Page\Product\ProductEditForm.Designer.cs">
+      <DependentUpon>ProductEditForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Form\AdminForm\Page\Product\ProductPage.cs">
       <SubType>UserControl</SubType>
