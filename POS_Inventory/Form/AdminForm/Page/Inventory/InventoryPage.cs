@@ -1,8 +1,9 @@
-﻿using System;
+﻿using POS_Inventory.Component;
+using POS_Inventory.Config;
+using System;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
-using POS_Inventory.Config;
 
 namespace POS_Inventory.Form.AdminForm.Page.Inventory
 {
@@ -14,12 +15,14 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
         private Panel pnlTableContainer;
         private Panel pnlPagination;
         private Panel pnlSearch;
+        private Pagination pagination;
 
         public InventoryPage()
         {
             productConfig = new ProductConfig();
             SetupLayout();
-            LoadInventoryData();
+            // Start at page 1
+            LoadPageData(1);
         }
 
         private void SetupLayout()
@@ -38,12 +41,12 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
                 AutoSize = true
             };
 
-            // --- Search Bar Container (Pill Style) ---
+            // --- Search Bar Container ---
             pnlSearch = new Panel
             {
                 Size = new Size(350, 45),
                 Location = new Point(20, 70),
-                BackColor = Color.FromArgb(180, 200, 235) // Muted blue from your photo
+                BackColor = Color.FromArgb(180, 200, 235)
             };
 
             txtSearch = new TextBox
@@ -56,10 +59,10 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
                 Width = 300,
                 Location = new Point(15, 12)
             };
+
             txtSearch.Enter += (s, e) => { if (txtSearch.Text == "Search by id, name, category") txtSearch.Text = ""; };
             txtSearch.Leave += (s, e) => { if (string.IsNullOrWhiteSpace(txtSearch.Text)) txtSearch.Text = "Search by id, name, category"; };
             txtSearch.TextChanged += TxtSearch_TextChanged;
-
             pnlSearch.Controls.Add(txtSearch);
 
             // --- Table Container ---
@@ -71,7 +74,7 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
                 BackColor = Color.Transparent
             };
 
-            // --- DataGridView (Styled exactly like ProductPage) ---
+            // --- DataGridView ---
             dgvInventory = new DataGridView
             {
                 Dock = DockStyle.Fill,
@@ -82,22 +85,20 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
                 AllowUserToAddRows = false,
                 RowHeadersVisible = false,
                 ReadOnly = true,
-                GridColor = Color.FromArgb(174, 214, 241), // Matches ProductPage
+                GridColor = Color.FromArgb(174, 214, 241),
                 RowTemplate = { Height = 40 },
                 ColumnHeadersHeight = 45,
                 EnableHeadersVisualStyles = false
             };
 
-            // Header Style (Blue variant from photo, using ProductPage fonts)
             dgvInventory.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle
             {
-                BackColor = Color.FromArgb(115, 160, 250), // Header Blue from photo
+                BackColor = Color.FromArgb(115, 160, 250),
                 ForeColor = Color.Black,
                 Font = new Font("Segoe UI", 11, FontStyle.Regular),
                 Alignment = DataGridViewContentAlignment.MiddleCenter
             };
 
-            // Cell Style (Matches ProductPage)
             dgvInventory.DefaultCellStyle = new DataGridViewCellStyle
             {
                 BackColor = AppColorConfig.White,
@@ -110,15 +111,16 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
 
             dgvInventory.CellContentClick += DgvInventory_CellContentClick;
 
-            // --- Pagination Placeholder ---
+            // --- Pagination Panel ---
             pnlPagination = new Panel
             {
                 Size = new Size(210, 50),
                 BackColor = AppColorConfig.White,
-                Location = new Point(pnlTableContainer.Right - 200, pnlTableContainer.Bottom + 10),
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
-            AddPaginationButtons();
+
+            // Setup Pagination Object (10 items per page)
+            pagination = new Pagination(pnlPagination, 10, LoadPageData);
 
             // Add controls
             this.Controls.Add(lblTitle);
@@ -126,99 +128,89 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
             this.Controls.Add(pnlTableContainer);
             pnlTableContainer.Controls.Add(dgvInventory);
             this.Controls.Add(pnlPagination);
+
+            // Handle Dynamic Positioning
+            this.Resize += (s, e) => UpdatePaginationPosition();
+            UpdatePaginationPosition();
         }
 
-        private void AddPaginationButtons()
+        private void UpdatePaginationPosition()
         {
-            string[] buttons = { "<", "1", "2", "3", ">" };
-            int x = 5;
-            foreach (var b in buttons)
+            pnlPagination.Left = pnlTableContainer.Left + pnlTableContainer.Width - pnlPagination.Width;
+            pnlPagination.Top = pnlTableContainer.Bottom + 10;
+        }
+
+        private void LoadPageData(int pageNumber)
+        {
+            // 1. Get all data
+            DataTable dtAll = productConfig.GetAllProducts();
+
+            // 2. Apply Search Filter if active
+            string filter = txtSearch.Text.Trim();
+            if (!string.IsNullOrEmpty(filter) && filter != "Search by id, name, category")
             {
-                Button btn = new Button
-                {
-                    Text = b,
-                    Size = new Size(35, 35),
-                    Location = new Point(x, 7),
-                    FlatStyle = FlatStyle.Flat,
-                    BackColor = (b == "2") ? Color.Orange : AppColorConfig.White,
-                    Font = new Font("Segoe UI", 9, FontStyle.Bold)
-                };
-                btn.FlatAppearance.BorderColor = Color.LightGray;
-                pnlPagination.Controls.Add(btn);
-                x += 40;
+                DataRow[] filteredRows = dtAll.Select(string.Format(
+                    "CONVERT(id, 'System.String') LIKE '%{0}%' OR product_name LIKE '%{0}%' OR category_name LIKE '%{0}%'",
+                    filter.Replace("'", "''")));
+
+                if (filteredRows.Length > 0)
+                    dtAll = filteredRows.CopyToDataTable();
+                else
+                    dtAll = dtAll.Clone(); // Empty table if no results
             }
+
+            // 3. Perform Pagination on the (potentially filtered) data
+            int pageSize = pagination.GetPageSize();
+            int startIndex = (pageNumber - 1) * pageSize;
+            int endIndex = Math.Min(startIndex + pageSize, dtAll.Rows.Count);
+
+            DataTable dtPage = dtAll.Clone();
+            for (int i = startIndex; i < endIndex; i++)
+                dtPage.ImportRow(dtAll.Rows[i]);
+
+            dgvInventory.DataSource = dtPage;
+
+            // 4. Refresh UI
+            AddActionColumns();
+            pagination.Bind(dtAll);
         }
 
-        private void LoadInventoryData()
+        private void TxtSearch_TextChanged(object sender, EventArgs e)
         {
-            DataTable dt = productConfig.GetAllProducts();
-            dgvInventory.DataSource = dt;
+            // Reset to page 1 whenever search changes to avoid "page out of bounds"
+            LoadPageData(1);
+        }
 
-            // Remove existing Action columns
+        private void AddActionColumns()
+        {
             if (dgvInventory.Columns.Contains("Edit")) dgvInventory.Columns.Remove("Edit");
             if (dgvInventory.Columns.Contains("Delete")) dgvInventory.Columns.Remove("Delete");
 
-            // Hide ID columns
-            if (dgvInventory.Columns.Contains("category_id")) dgvInventory.Columns["category_id"].Visible = false;
-
-            // Edit Column (Matches ProductPage)
-            DataGridViewButtonColumn btnEdit = new DataGridViewButtonColumn
+            var btnEdit = new DataGridViewButtonColumn
             {
                 Name = "Edit",
-                HeaderText = "action",
+                HeaderText = "Action",
                 Text = "Edit",
                 UseColumnTextForButtonValue = true,
                 FlatStyle = FlatStyle.Flat,
                 Width = 60
             };
             btnEdit.DefaultCellStyle.BackColor = AppColorConfig.CardStaff;
-            btnEdit.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
             dgvInventory.Columns.Add(btnEdit);
 
-            // Delete Column (Matches ProductPage)
-            DataGridViewButtonColumn btnDelete = new DataGridViewButtonColumn
+            var btnDelete = new DataGridViewButtonColumn
             {
                 Name = "Delete",
-                HeaderText = "action",
-                Text = "delete",
+                HeaderText = "Action",
+                Text = "Delete",
                 UseColumnTextForButtonValue = true,
                 FlatStyle = FlatStyle.Flat,
                 Width = 60
             };
             btnDelete.DefaultCellStyle.BackColor = AppColorConfig.HeaderPink;
-            btnDelete.DefaultCellStyle.ForeColor = AppColorConfig.TextDark;
             dgvInventory.Columns.Add(btnDelete);
-
-            // Column Header Renaming
-            if (dgvInventory.Columns.Contains("id")) dgvInventory.Columns["id"].HeaderText = "Product Id";
-            if (dgvInventory.Columns.Contains("product_name")) dgvInventory.Columns["product_name"].HeaderText = "Product Name";
-            if (dgvInventory.Columns.Contains("category_name")) dgvInventory.Columns["category_name"].HeaderText = "Category Name";
-            if (dgvInventory.Columns.Contains("stock_qty")) dgvInventory.Columns["stock_qty"].HeaderText = "stock";
-            if (dgvInventory.Columns.Contains("price")) dgvInventory.Columns["price"].HeaderText = "price";
         }
 
-        private void TxtSearch_TextChanged(object sender, EventArgs e)
-        {
-            if (dgvInventory.DataSource is DataTable dt)
-            {
-                 string filterText = txtSearch.Text.Trim().Replace("'", "''");
-
-                 if (filterText != "Search by id, name, category" && !string.IsNullOrWhiteSpace(filterText))
-                {
-                     dt.CaseSensitive = false;
-
-                     dt.DefaultView.RowFilter = string.Format(
-                        "CONVERT(id, 'System.String') LIKE '%{0}%' OR " +
-                        "product_name LIKE '%{0}%' OR " +
-                        "category_name LIKE '%{0}%'",
-                        filterText);
-                }
-                else
-                {
-                     dt.DefaultView.RowFilter = "";
-                }
-            }
-        }
         private void DgvInventory_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
@@ -226,14 +218,11 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
 
             if (dgvInventory.Columns[e.ColumnIndex].Name == "Edit")
             {
-                // Pass the productConfig and the ID of the selected row
                 using (InventoryEditForm editForm = new InventoryEditForm(productConfig, id))
                 {
                     if (editForm.ShowDialog() == DialogResult.OK)
                     {
-                        // If the user saved, reload the table to show updated data
-                        LoadInventoryData();
-                        MessageBox.Show("Product updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        LoadPageData(pagination.GetCurrentPage());
                     }
                 }
             }
@@ -241,7 +230,8 @@ namespace POS_Inventory.Form.AdminForm.Page.Inventory
             {
                 if (MessageBox.Show("Delete this record?", "Confirm", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    if (productConfig.DeleteProduct(id)) LoadInventoryData();
+                    if (productConfig.DeleteProduct(id))
+                        LoadPageData(pagination.GetCurrentPage());
                 }
             }
         }
